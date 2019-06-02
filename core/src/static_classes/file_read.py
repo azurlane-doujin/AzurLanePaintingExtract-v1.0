@@ -4,7 +4,7 @@ import os.path as op
 import re
 
 from core.src.static_classes.static_data import GlobalData
-from core.src.struct_classes.extect_struct import PerWorkList
+from core.src.structs_classes.extract_structs import PerWorkList
 
 
 class FileFilter(object):

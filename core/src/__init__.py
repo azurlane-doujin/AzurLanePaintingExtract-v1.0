@@ -1,1 +1,1 @@
-__all__ = ["frame_classse", "struct_classes", "theard_classes"]
+__all__ = ["frame_classes", "structs_classes", "thread_classes", "static_classes"]

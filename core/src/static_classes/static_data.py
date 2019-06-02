@@ -78,7 +78,7 @@ class GlobalData:
 
     @property
     def fp_young(self):
-        return re.compile(r'^.+_younvy(?:_[\dhg])?$')
+        return re.compile(r'^.+_younv(?:_[\dhg])?$')
 
     @property
     def fp_pattern_group(self):
