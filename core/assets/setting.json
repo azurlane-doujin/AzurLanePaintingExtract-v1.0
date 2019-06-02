@@ -1,0 +1,1 @@
+{"input_clear": true, "finish_exit": true, "skip_exist": false, "open_dir": true, "use_cn": true, "make_new_dir": true, "export_copy": false, "input_filter_mesh": "^.+(?<!_[\\dhg])-mesh\\.[Oo][Bb][Jj]$", "input_filter_tex": "^.+(?<!_[\\dhg])\\.[Pp][Nn][Gg]$", "input_filter": 1, "output_group": 1}
