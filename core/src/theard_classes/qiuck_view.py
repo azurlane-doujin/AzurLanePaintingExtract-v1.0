@@ -25,7 +25,7 @@ class QuickRestore(threading.Thread):
 
     def run(self):
         try:
-            size = tuple(self.father.m_bitmap_show.GetSize())
+            size = tuple(self.father.m_scrolledWindow1.GetSize())
             if self.info.is_able_work:
                 pic = ImageWork.restore_tool_no_save(self.info.mesh_path, self.info.tex_path, size)
             elif self.info.lay_in != '':
@@ -37,28 +37,26 @@ class QuickRestore(threading.Thread):
 
             # temp = self.pil_to_wx_image(pic)
 
-
-            pic.save("%s\\temp.png" % self.path)
-            time.sleep(0.5)
-            temp = wx.Image('%s\\temp.png' % self.path, wx.BITMAP_TYPE_PNG)
-            temp = wx.Bitmap(temp)
+            # pic.save("%s\\temp.png" % self.path)
+            # time.sleep(0.5)
+            # temp = wx.Image('%s\\temp.png' % self.path, wx.BITMAP_TYPE_PNG)
+            temp = wx.Bitmap.FromBufferRGBA(pic.width, pic.height, pic.tobytes())
 
             self.father.m_bitmap_show.SetBitmap(temp)
-
 
             # time.sleep(3)
             # if
             # self.father.m_notebook_info.SetSelection(self.back)
-           # if self.full["auto_open"] and False:
-           #     os.system(r'start ' + "\"%s\\temp.png\"" % self.path)
+        # if self.full["auto_open"] and False:
+        #     os.system(r'start ' + "\"%s\\temp.png\"" % self.path)
 
         except RuntimeError as info:
             # self.father.append_error(info)
             print(info)
             raise
 
-  #     if self.father.any_error():
-  #         self.father.m_notebook_info.SetSelection(2)
+    #     if self.father.any_error():
+    #         self.father.m_notebook_info.SetSelection(2)
 
     @staticmethod
     def pil_to_wx_image(pic):

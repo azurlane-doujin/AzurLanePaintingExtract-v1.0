@@ -5,12 +5,15 @@ from itertools import filterfalse
 
 import wx
 
+from core.src.static_classes.static_data import GlobalData
 from core.src.struct_classes.basic_class import BasicInfo, BasicInfoList
 
 
 class PerInfo(BasicInfo):
     def __init__(self, name, val, has_cn):
         super(PerInfo, self).__init__(name, val)
+
+        self.data = GlobalData()
 
         self._tex_path = "Empty"
         self.more_tex = []
@@ -31,6 +34,14 @@ class PerInfo(BasicInfo):
         self.more_tex_per_id = []
         self.mesh_id = ...
         self.more_mesh_per_id = []
+
+        self._is_save_as_cn = True
+
+    def __contains__(self, item):
+        if self.name in item or self.cn_name in item:
+            return True
+        else:
+            return False
 
     @property
     def tex_path(self):
@@ -56,7 +67,20 @@ class PerInfo(BasicInfo):
 
     @save_path.setter
     def save_path(self, value):
-        self._save_path = os.path.join(value, self.cn_name + ".png")
+        if self._is_save_as_cn:
+            self._save_path = os.path.join(value, self.cn_name + ".png")
+        else:
+
+            self._save_path = os.path.join(value, self.name + ".png")
+
+    @property
+    def is_save_as_cn(self):
+        return self._is_save_as_cn
+
+    @is_save_as_cn.setter
+    def is_save_as_cn(self, value):
+        if isinstance(value, bool):
+            self._is_save_as_cn = value
 
     @staticmethod
     def is_def(val):
@@ -75,10 +99,14 @@ class PerInfo(BasicInfo):
         :param tree_root: 根id
         :return:
         """
+        self.more_mesh_per_id.clear()
+        self.more_tex_per_id.clear()
 
         self.tree_ID = tree.AppendItem(tree_root, self.cn_name)
 
-        tree.AppendItem(self.tree_ID, f"名称：{self.cn_name}")
+        key = tree.AppendItem(self.tree_ID, f"名称：{self.cn_name}")
+        if self.is_able_work:
+            tree.SetItemTextColour(key, wx.Colour(253, 86, 255))
         tree.AppendItem(self.tree_ID, f"原始文件名：{self.name}")
 
         self.tex_id = tree.AppendItem(self.tree_ID, f"Texture文件路径：{self.tex_path}")
@@ -119,10 +147,26 @@ class PerInfo(BasicInfo):
 
         self.mesh_id, self.more_mesh, self.mesh_path, self.more_mesh_per_id = None, [], "Empty", []
 
+    def build_sub(self, value_type, file_type, index):
+        val = PerInfo(self.name, self.val, self.has_cn)
+        if value_type == self.data.td_single:
+            if file_type == self.data.td_texture_type:
+                val.tex_path = self.tex_path
+            elif file_type == self.data.td_mesh_type:
+                val.mesh_path = self.mesh_path
+        elif value_type == self.data.td_list_item:
+            if file_type == self.data.td_texture_type:
+                val.tex_path = self.more_tex[index]
+            elif file_type == self.data.td_mesh_type:
+                val.mesh_path = self.more_mesh[index]
+
+        return os.path.isfile(val.tex_path), val
+
 
 class PerWorkList(BasicInfoList):
     def __init__(self, item: collections.abc.Iterable = None):
         super(PerWorkList, self).__init__(item)
+        self.data = GlobalData()
 
     # 显示部分
     def show_in_tree(self, tree, tree_root):
@@ -133,6 +177,9 @@ class PerWorkList(BasicInfoList):
 
         self[value.name] = value
         return value
+
+    def remove(self, item: collections.abc.Iterable):
+        return PerWorkList(super(PerWorkList, self).remove(item))
 
     # 查找部分
     def find_by_id(self, id):
@@ -155,13 +202,13 @@ class PerWorkList(BasicInfoList):
         if target is None:
             return False, False, False, -1, None
         if id == target.tex_id:
-            return True, True, True, 0, target
+            return True, self.data.td_single, self.data.td_texture_type, 0, target
         elif id == target.mesh_id:
-            return True, True, False, 0, target
+            return True, self.data.td_single, self.data.td_mesh_type, 0, target
         elif id in target.more_tex_per_id:
-            return True, False, True, target.more_tex_per_id.index(id), target
+            return True, self.data.td_list_item, self.data.td_texture_type, target.more_tex_per_id.index(id), target
         elif id in target.more_mesh_per_id:
-            return True, False, False, target.more_mesh_per_id.index(id), target
+            return True, self.data.td_list_item, self.data.td_mesh_type, target.more_mesh_per_id.index(id), target
 
     # 添加部分
     def set_tex(self, value, name=None):
@@ -171,12 +218,14 @@ class PerWorkList(BasicInfoList):
         :param value: 新添加的texture地址
         :return:
         """
+        has_ = False
         if isinstance(value, str) and os.path.isfile(value):
             if name is not None:
                 key = name
             else:
                 key = os.path.splitext(os.path.basename(value))[0]
                 if re.match(r'.+\s#\d+\.png', value, re.IGNORECASE):
+                    has_ = True
                     key = re.split(r'\s#\d+(\[alpha\])?$', key)[0]
 
             val: PerInfo = self._info_dict[key]
@@ -187,6 +236,8 @@ class PerWorkList(BasicInfoList):
                 val.tex_path = value
             if os.path.split(value)[0].lower().endswith("texture2d"):
                 val.tex_path = value
+            if not has_:
+                val.tex_path = value
 
     def set_mesh(self, value, name=None):
         """
@@ -195,12 +246,14 @@ class PerWorkList(BasicInfoList):
                :param value: 新添加的mesh地址
                :return:
                """
+        has_ = False
         if isinstance(value, str) and os.path.isfile(value):
             if name is not None:
                 key = name
             else:
                 key = os.path.splitext(os.path.basename(value))[0]
                 if re.match(r'.+\s#\d+\.obj', value, re.IGNORECASE):
+                    has_ = True
                     key = re.split(r'\s#\d+(\[alpha\])?$', key)[0]
 
             val: PerInfo = self._info_dict[key]
@@ -210,6 +263,8 @@ class PerWorkList(BasicInfoList):
             if val.mesh_path.lower() == "empty":
                 val.mesh_path = value
             if os.path.split(value)[0].lower().endswith("mesh"):
+                val.mesh_path = value
+            if not has_:
                 val.mesh_path = value
 
     def append_name(self, name, val: dict, *, has_cn=False):
@@ -258,7 +313,27 @@ class PerWorkList(BasicInfoList):
         val = map(lambda x: f"{x.name}{x.cn_name}", self)
         return list(val)
 
+    def build_filter(self):
+        val = map(lambda x: f"{x.name}", self)
+        val = list(enumerate(list(val), 0))
+        return val
+
+    def build_skip(self, filename):
+        filename = list(map(lambda x: os.path.splitext(os.path.basename(x))[0], filename))
+
+        val = filter(lambda x: x in filename, self)
+
+        return PerWorkList(val)
+
     def build_from_indexes(self, indexes):
         val = map(lambda x: self[x], indexes)
         value = PerWorkList(val)
         return value
+
+    def build_from_pattern(self, pattern):
+        val = list(filter(lambda x: re.match(pattern, list(x)[1]), self.build_filter()))
+        val = list(zip(*val))
+        if len(val) == 2:
+            return self.build_from_indexes(val[0])
+        else:
+            return PerWorkList()

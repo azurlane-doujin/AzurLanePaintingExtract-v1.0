@@ -106,8 +106,9 @@ class ImageWork(object):
 
             pic.save(now_info.save_path)
         except RuntimeError as info:
-            return False, info
-
+            return False, str(info)
+        except ValueError as info:
+            return False, "math" + str(info)
         else:
             return True, "成功还原：%s" % now_info.cn_name
 
