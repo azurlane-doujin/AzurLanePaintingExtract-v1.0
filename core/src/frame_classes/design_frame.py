@@ -218,21 +218,17 @@ class MyDialogSetting ( wx.Dialog ):
 
 		bSizer12 = wx.BoxSizer( wx.HORIZONTAL )
 
-		self.m_staticText2 = wx.StaticText( self.m_panel2, wx.ID_ANY, u"键值对设置", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText2.Wrap( -1 )
-
-		bSizer12.Add( self.m_staticText2, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		self.m_button_updata_names = wx.Button( self.m_panel2, wx.ID_ANY, u"在线更新键-值对", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer12.Add( self.m_button_updata_names, 0, wx.ALL, 5 )
 
 		self.m_staticline12 = wx.StaticLine( self.m_panel2, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_VERTICAL )
 		bSizer12.Add( self.m_staticline12, 0, wx.EXPAND |wx.ALL, 5 )
 
-		self.m_bpButton1 = wx.BitmapButton( self.m_panel2, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, wx.BU_AUTODRAW|0 )
-
-		self.m_bpButton1.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_NORMAL_FILE, wx.ART_BUTTON ) )
-		bSizer12.Add( self.m_bpButton1, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL|wx.EXPAND, 5 )
+		self.m_button_edit_names = wx.Button( self.m_panel2, wx.ID_ANY, u"编辑键-值对", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer12.Add( self.m_button_edit_names, 0, wx.ALL, 5 )
 
 
-		bSizer10.Add( bSizer12, 0, wx.EXPAND, 5 )
+		bSizer10.Add( bSizer12, 0, wx.ALIGN_CENTER_HORIZONTAL, 5 )
 
 
 		self.m_panel2.SetSizer( bSizer10 )
@@ -290,7 +286,8 @@ class MyDialogSetting ( wx.Dialog ):
 
 		# Connect Events
 		self.Bind( wx.EVT_INIT_DIALOG, self.set_info )
-		self.m_bpButton1.Bind( wx.EVT_BUTTON, self.key_value_setting )
+		self.m_button_updata_names.Bind( wx.EVT_BUTTON, self.update_names )
+		self.m_button_edit_names.Bind( wx.EVT_BUTTON, self.edit_names )
 		self.m_sdbSizer1Apply.Bind( wx.EVT_BUTTON, self.apply_press )
 		self.m_sdbSizer1Cancel.Bind( wx.EVT_BUTTON, self.cancel_press )
 		self.m_sdbSizer1OK.Bind( wx.EVT_BUTTON, self.ok_press )
@@ -303,7 +300,10 @@ class MyDialogSetting ( wx.Dialog ):
 	def set_info( self, event ):
 		event.Skip()
 
-	def key_value_setting( self, event ):
+	def update_names( self, event ):
+		event.Skip()
+
+	def edit_names( self, event ):
 		event.Skip()
 
 	def apply_press( self, event ):
@@ -323,15 +323,107 @@ class MyDialogSetting ( wx.Dialog ):
 class MyDialogKetValueSetting ( wx.Dialog ):
 
 	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"编辑键值对", pos = wx.DefaultPosition, size = wx.Size( 256,512 ), style = wx.DEFAULT_DIALOG_STYLE )
 
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 
+		bSizer13 = wx.BoxSizer( wx.VERTICAL )
+
+		bSizer14 = wx.BoxSizer( wx.VERTICAL )
+
+		m_listBox_name_existChoices = []
+		self.m_listBox_name_exist = wx.ListBox( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, m_listBox_name_existChoices, wx.LB_ALWAYS_SB|wx.LB_HSCROLL|wx.LB_SINGLE )
+		bSizer14.Add( self.m_listBox_name_exist, 1, wx.ALL|wx.EXPAND, 5 )
+
+
+		bSizer13.Add( bSizer14, 1, wx.EXPAND, 5 )
+
+		self.m_staticline13 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_VERTICAL )
+		bSizer13.Add( self.m_staticline13, 0, wx.EXPAND |wx.ALL, 5 )
+
+		bSizer15 = wx.BoxSizer( wx.VERTICAL )
+
+		self.m_staticText3 = wx.StaticText( self, wx.ID_ANY, u"键【KEY】", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText3.Wrap( -1 )
+
+		bSizer15.Add( self.m_staticText3, 1, wx.ALL|wx.EXPAND, 5 )
+
+		self.m_textCtrl_new_key = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer15.Add( self.m_textCtrl_new_key, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.m_staticText4 = wx.StaticText( self, wx.ID_ANY, u"值【value】", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText4.Wrap( -1 )
+
+		bSizer15.Add( self.m_staticText4, 1, wx.ALL|wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+
+		self.m_textCtrl_new_value = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer15.Add( self.m_textCtrl_new_value, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.m_staticline16 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		bSizer15.Add( self.m_staticline16, 0, wx.EXPAND |wx.ALL, 5 )
+
+		bSizer16 = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_bpButton_import_names = wx.BitmapButton( self, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, wx.BU_AUTODRAW|0 )
+
+		self.m_bpButton_import_names.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_PLUS, wx.ART_BUTTON ) )
+		bSizer16.Add( self.m_bpButton_import_names, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+
+		self.m_staticline17 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL|wx.LI_VERTICAL )
+		bSizer16.Add( self.m_staticline17, 0, wx.EXPAND |wx.ALL, 5 )
+
+		self.m_button_clear = wx.Button( self, wx.ID_ANY, u"清空", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer16.Add( self.m_button_clear, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+
+		self.m_button_add = wx.Button( self, wx.ID_ANY, u"添加", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer16.Add( self.m_button_add, 0, wx.ALL, 5 )
+
+
+		bSizer15.Add( bSizer16, 0, wx.EXPAND|wx.ALIGN_RIGHT, 5 )
+
+
+		bSizer13.Add( bSizer15, 0, wx.EXPAND, 5 )
+
+
+		self.SetSizer( bSizer13 )
+		self.Layout()
 
 		self.Centre( wx.BOTH )
 
+		# Connect Events
+		self.Bind( wx.EVT_CLOSE, self.close_save )
+		self.Bind( wx.EVT_INIT_DIALOG, self.editor_init )
+		self.m_listBox_name_exist.Bind( wx.EVT_LISTBOX, self.edit_exist_item )
+		self.m_listBox_name_exist.Bind( wx.EVT_LISTBOX_DCLICK, self.view_item )
+		self.m_bpButton_import_names.Bind( wx.EVT_BUTTON, self.import_names )
+		self.m_button_clear.Bind( wx.EVT_BUTTON, self.clear_item )
+		self.m_button_add.Bind( wx.EVT_BUTTON, self.add_item )
+
 	def __del__( self ):
 		pass
+
+
+	# Virtual event handlers, overide them in your derived class
+	def close_save( self, event ):
+		event.Skip()
+
+	def editor_init( self, event ):
+		event.Skip()
+
+	def edit_exist_item( self, event ):
+		event.Skip()
+
+	def view_item( self, event ):
+		event.Skip()
+
+	def import_names( self, event ):
+		event.Skip()
+
+	def clear_item( self, event ):
+		event.Skip()
+
+	def add_item( self, event ):
+		event.Skip()
 
 
 ###########################################################################

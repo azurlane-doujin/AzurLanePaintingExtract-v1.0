@@ -476,11 +476,12 @@ class MainFrame(Mf):
         :param event:
         :return:
         """
-        self.__dialog = Setting(self, self.setting_info, self.work_path)
+        self.__dialog = Setting(self, self.setting_info, self.work_path, self.names)
 
         self.__dialog.ShowModal()
         # 重置设置
         self.setting_info = self.__dialog.get_setting()
+        self.names=self.__dialog.get_names()
 
     def resize(self, event):
         """

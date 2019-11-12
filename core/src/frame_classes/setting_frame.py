@@ -4,6 +4,7 @@ import os
 import wx
 
 from core.src.frame_classes.design_frame import MyDialogSetting
+from core.src.frame_classes.names_edit_frame import NamesEditFrame
 from core.src.static_classes.image_deal import ImageWork
 from core.src.static_classes.static_data import GlobalData
 from core.src.structs_classes.setting_structs import SettingHolder, PerSetting
@@ -11,11 +12,13 @@ from core.src.structs_classes.setting_structs import SettingHolder, PerSetting
 
 class Setting(MyDialogSetting):
 
-    def __init__(self, parent, setting_info, work_path):
+    def __init__(self, parent, setting_info, work_path, names):
         super(Setting, self).__init__(parent)
+        self.names = names
         self.frame = parent
         self.setting = setting_info
         self.path = work_path
+
         self.data = GlobalData()
 
         pic, _ = ImageWork.pic_transform(os.path.join(self.path, "core\\assets\\img.png"),
@@ -91,5 +94,16 @@ class Setting(MyDialogSetting):
     def apply_press(self, event):
         self.save_info()
 
+    def update_names(self, event):
+        wx.MessageBox("敬请期待", "信息", wx.ICON_INFORMATION)
+
+    def edit_names(self, event):
+        dialog = NamesEditFrame(self, self.names, self.path)
+        dialog.ShowModal()
+        self.names = dialog.get_names()
+
     def get_setting(self):
         return self.setting
+
+    def get_names(self):
+        return self.names
