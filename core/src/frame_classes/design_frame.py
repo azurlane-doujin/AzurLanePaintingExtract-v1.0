@@ -34,7 +34,7 @@ class MainFrame ( wx.Frame ):
 
 		bSizer8 = wx.BoxSizer( wx.HORIZONTAL )
 
-		m_choice_filterChoices = [ u"全部", u"仅原始立绘", u"仅皮肤立绘", u"仅改造立绘", u"仅婚纱立绘", u"仅幼女化立绘" ]
+		m_choice_filterChoices = [ u"全部", u"仅原始立绘", u"仅皮肤立绘", u"仅改造立绘", u"仅婚纱立绘", u"仅幼女化立绘", u"仅μ兵装立绘", u"其他立绘" ]
 		self.m_choice_filter = wx.Choice( self.m_panel1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, m_choice_filterChoices, 0 )
 		self.m_choice_filter.SetSelection( 0 )
 		bSizer8.Add( self.m_choice_filter, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL|wx.EXPAND, 5 )
@@ -213,6 +213,27 @@ class MyDialogSetting ( wx.Dialog ):
 		self.m_bitmap2 = wx.StaticBitmap( self.m_panel2, wx.ID_ANY, wx.ArtProvider.GetBitmap( wx.ART_MISSING_IMAGE, wx.ART_OTHER ), wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer10.Add( self.m_bitmap2, 1, wx.ALL|wx.EXPAND, 5 )
 
+		self.m_staticline11 = wx.StaticLine( self.m_panel2, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		bSizer10.Add( self.m_staticline11, 0, wx.EXPAND |wx.ALL, 5 )
+
+		bSizer12 = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_staticText2 = wx.StaticText( self.m_panel2, wx.ID_ANY, u"键值对设置", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText2.Wrap( -1 )
+
+		bSizer12.Add( self.m_staticText2, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+
+		self.m_staticline12 = wx.StaticLine( self.m_panel2, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_VERTICAL )
+		bSizer12.Add( self.m_staticline12, 0, wx.EXPAND |wx.ALL, 5 )
+
+		self.m_bpButton1 = wx.BitmapButton( self.m_panel2, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, wx.BU_AUTODRAW|0 )
+
+		self.m_bpButton1.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_NORMAL_FILE, wx.ART_BUTTON ) )
+		bSizer12.Add( self.m_bpButton1, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL|wx.EXPAND, 5 )
+
+
+		bSizer10.Add( bSizer12, 0, wx.EXPAND, 5 )
+
 
 		self.m_panel2.SetSizer( bSizer10 )
 		self.m_panel2.Layout()
@@ -225,7 +246,7 @@ class MyDialogSetting ( wx.Dialog ):
 		self.m_panel3 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		bSizer11 = wx.BoxSizer( wx.VERTICAL )
 
-		m_radioBox_input_filterChoices = [ u"全部立绘", u"全部初始皮肤", u"全部皮肤", u"全部改造立绘", u"全部誓约立绘", u"全部幼女化立绘" ]
+		m_radioBox_input_filterChoices = [ u"全部立绘", u"全部初始皮肤", u"全部皮肤", u"全部改造立绘", u"全部誓约立绘", u"全部幼女化立绘", u"全部μ兵装立绘", u"其他立绘" ]
 		self.m_radioBox_input_filter = wx.RadioBox( self.m_panel3, wx.ID_ANY, u"导入文件筛选", wx.DefaultPosition, wx.DefaultSize, m_radioBox_input_filterChoices, 1, wx.RA_SPECIFY_COLS )
 		self.m_radioBox_input_filter.SetSelection( 5 )
 		bSizer11.Add( self.m_radioBox_input_filter, 1, wx.ALL|wx.EXPAND, 5 )
@@ -269,6 +290,7 @@ class MyDialogSetting ( wx.Dialog ):
 
 		# Connect Events
 		self.Bind( wx.EVT_INIT_DIALOG, self.set_info )
+		self.m_bpButton1.Bind( wx.EVT_BUTTON, self.key_value_setting )
 		self.m_sdbSizer1Apply.Bind( wx.EVT_BUTTON, self.apply_press )
 		self.m_sdbSizer1Cancel.Bind( wx.EVT_BUTTON, self.cancel_press )
 		self.m_sdbSizer1OK.Bind( wx.EVT_BUTTON, self.ok_press )
@@ -281,6 +303,9 @@ class MyDialogSetting ( wx.Dialog ):
 	def set_info( self, event ):
 		event.Skip()
 
+	def key_value_setting( self, event ):
+		event.Skip()
+
 	def apply_press( self, event ):
 		event.Skip()
 
@@ -289,5 +314,41 @@ class MyDialogSetting ( wx.Dialog ):
 
 	def ok_press( self, event ):
 		event.Skip()
+
+
+###########################################################################
+## Class MyDialogKetValueSetting
+###########################################################################
+
+class MyDialogKetValueSetting ( wx.Dialog ):
+
+	def __init__( self, parent ):
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE )
+
+		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+
+
+		self.Centre( wx.BOTH )
+
+	def __del__( self ):
+		pass
+
+
+###########################################################################
+## Class MyDialogAddFace
+###########################################################################
+
+class MyDialogAddFace ( wx.Dialog ):
+
+	def __init__( self, parent ):
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE )
+
+		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+
+
+		self.Centre( wx.BOTH )
+
+	def __del__( self ):
+		pass
 
 

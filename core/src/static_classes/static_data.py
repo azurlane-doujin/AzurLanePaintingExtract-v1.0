@@ -28,6 +28,11 @@ class GlobalData:
     def td_mesh_type(self):
         return False
 
+    # action type
+    @property
+    def at_independent(self):
+        return 0
+
     # tree_filter
     @property
     def tf_all(self):
@@ -53,7 +58,13 @@ class GlobalData:
 
     @property
     def tf_young_only(self):
+        # 小舰娘
         return 5
+
+    @property
+    def tf_u_skin(self):
+        # μ兵装
+        return 6
 
     # fp:filter pattern
     @property
@@ -62,11 +73,11 @@ class GlobalData:
 
     @property
     def fp_default_skin(self):
-        return re.compile(r'^.+(?<!_[\dhg])$')
+        return re.compile(r'^[^_]+(?:_younv)?$')
 
     @property
     def fp_skin(self):
-        return re.compile(r'^.+(?<=_\d)$')
+        return re.compile(r'^.+(?<=.._\d|_\d_n)$')
 
     @property
     def fp_build_up(self):
@@ -81,8 +92,17 @@ class GlobalData:
         return re.compile(r'^.+_younv(?:_[\dhg])?$')
 
     @property
+    def fp_u_skin(self):
+        return re.compile(r'^.+(?<=.._idol|_idolns)$')
+
+    @property
+    def fp_other_skin(self):
+        return re.compile(r'^.+(?<!_[^hg])|(?<!_younv)|(?<!.._\d|_\d_n)$')
+
+    @property
     def fp_pattern_group(self):
-        return self.fp_all, self.fp_default_skin, self.fp_skin, self.fp_build_up, self.fp_wedding, self.fp_young
+        return self.fp_all, self.fp_default_skin, self.fp_skin, self.fp_build_up, self.fp_wedding, self.fp_young, \
+               self.fp_u_skin, self.fp_other_skin
 
     # et:export type
     @property
@@ -125,6 +145,14 @@ class GlobalData:
     @property
     def fif_young_only(self):
         return 5
+
+    @property
+    def fif_u_skin(self):
+        return 6
+
+    @property
+    def fif_other_skin(self):
+        return 6
 
     # feg :file export group
     @property

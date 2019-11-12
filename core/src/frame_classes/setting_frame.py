@@ -25,22 +25,10 @@ class Setting(MyDialogSetting):
 
         self.setting_hold = SettingHolder(setting_info)
 
-        self.input_filter_tex = (
-            r'^.+\.[Pp][Nn][Gg]$',
-            r'^.+(?<!_[\dhg])\.[Pp][Nn][Gg]$',
-            r'^.+(?<=_\d)\.[Pp][Nn][Gg]$',
-            r'^.+(?<=_g)\.[Pp][Nn][Gg]$',
-            r'^.+(?<=_h)\.[Pp][Nn][Gg]$',
-            r'^.+_younvy(?:_[\dhg])?\.[Pp][Nn][Gg]$',
-        )
-        self.input_filter_mesh = (
-            r'^.+-mesh\.[Oo][Bb][Jj]$',
-            r'^.+(?<!_[\dhg])-mesh\.[Oo][Bb][Jj]$',
-            r'^.+(?<=_\d)-mesh\.[Oo][Bb][Jj]$',
-            r'^.+(?<=_g)-mesh\.[Oo][Bb][Jj]$',
-            r'^.+(?<=_h)-mesh\.[Oo][Bb][Jj]$',
-            r'^.+_younvy(?:_[\dhg])?-mesh\.[Oo][Bb][Jj]$',
-        )
+        self.input_filter_tex = tuple(
+            map(lambda v: str(v.pattern).replace("$", "\\.[Pp][Nn][Gg]$"), self.data.fp_pattern_group))
+        self.input_filter_mesh = tuple(
+            map(lambda x: str(x.pattern).replace('$', r'-mesh\.[Oo][Bb][Jj]$'), self.data.fp_pattern_group))
 
     def save_info(self):
         self.setting_hold.get_value()

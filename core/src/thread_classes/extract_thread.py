@@ -70,6 +70,9 @@ class RestoreThread(threading.Thread):
                     elif pattern_young.match(now_info.name) is not None:
                         save_path = f"{self.save_path}\\幼女化"
 
+                    elif data.fp_u_skin.match(now_info.name) is not None:
+                        save_path = f"{self.save_path}\\μ兵装"
+
                     else:
                         save_path = f"{self.save_path}\\其他"
 

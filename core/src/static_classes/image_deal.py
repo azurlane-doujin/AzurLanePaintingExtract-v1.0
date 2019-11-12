@@ -125,7 +125,7 @@ class ImageWork(object):
     def restore_tool_no_save(mesh_path, pic_path, size: tuple):
         """拼图用的函数"""
         pic = ImageWork.az_paint_restore(mesh_path, pic_path)
-        pic_size=pic.size
+        pic_size = pic.size
         bg = PIL.Image.new("RGBA", size, (255, 255, 255, 0))
 
         scale = min(bg.size[0] / pic.size[0], bg.size[1] / pic.size[1])
@@ -135,7 +135,7 @@ class ImageWork(object):
         x = round(bg.size[0] / 2 - pic.size[0] / 2)
         y = round(bg.size[1] / 2 - pic.size[1] / 2)
         bg.paste(pic, (x, y, x + pic.size[0], y + pic.size[1]))
-        return bg,pic_size
+        return bg, pic_size
 
     @staticmethod
     def pic_transform(path, size):
@@ -150,4 +150,4 @@ class ImageWork(object):
         x = round(bg.size[0] / 2 - pic.size[0] / 2)
         y = round(bg.size[1] / 2 - pic.size[1] / 2)
         bg.paste(pic, (x, y, x + pic.size[0], y + pic.size[1]))
-        return bg,pic_size
+        return bg, pic_size
