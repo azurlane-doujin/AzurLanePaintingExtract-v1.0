@@ -433,14 +433,227 @@ class MyDialogKetValueSetting ( wx.Dialog ):
 class MyDialogAddFace ( wx.Dialog ):
 
 	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"接头器", pos = wx.DefaultPosition, size = wx.Size( 681,467 ), style = wx.DEFAULT_DIALOG_STYLE )
 
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 
+		bSizer17 = wx.BoxSizer( wx.VERTICAL )
+
+		bSizer26 = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_scrolledWindow2 = wx.ScrolledWindow( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.HSCROLL|wx.VSCROLL )
+		self.m_scrolledWindow2.SetScrollRate( 5, 5 )
+		bSizer19 = wx.BoxSizer( wx.VERTICAL )
+
+		self.m_bitmap_main_view = wx.StaticBitmap( self.m_scrolledWindow2, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer19.Add( self.m_bitmap_main_view, 1, wx.ALL|wx.EXPAND, 5 )
+
+
+		self.m_scrolledWindow2.SetSizer( bSizer19 )
+		self.m_scrolledWindow2.Layout()
+		bSizer19.Fit( self.m_scrolledWindow2 )
+		bSizer26.Add( self.m_scrolledWindow2, 1, wx.EXPAND |wx.ALL, 5 )
+
+		self.m_staticline16 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_VERTICAL )
+		bSizer26.Add( self.m_staticline16, 0, wx.EXPAND |wx.ALL, 5 )
+
+		self.m_panel6 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		self.m_panel6.SetMinSize( wx.Size( 256,-1 ) )
+		self.m_panel6.SetMaxSize( wx.Size( 192,-1 ) )
+
+		bSizer20 = wx.BoxSizer( wx.VERTICAL )
+
+		self.m_notebook_info = wx.Notebook( self.m_panel6, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.NB_BOTTOM )
+		self.m_panel7 = wx.Panel( self.m_notebook_info, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer22 = wx.BoxSizer( wx.VERTICAL )
+
+		self.m_staticText4 = wx.StaticText( self.m_panel7, wx.ID_ANY, u"左上角横坐标", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText4.Wrap( -1 )
+
+		bSizer22.Add( self.m_staticText4, 0, wx.ALL, 5 )
+
+		self.m_textCtrl_x_value = wx.TextCtrl( self.m_panel7, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.TE_PROCESS_ENTER )
+		bSizer22.Add( self.m_textCtrl_x_value, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.m_staticText5 = wx.StaticText( self.m_panel7, wx.ID_ANY, u"左上角纵坐标", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText5.Wrap( -1 )
+
+		bSizer22.Add( self.m_staticText5, 0, wx.ALL, 5 )
+
+		self.m_textCtrl_y_value = wx.TextCtrl( self.m_panel7, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer22.Add( self.m_textCtrl_y_value, 0, wx.ALL|wx.EXPAND, 5 )
+
+
+		self.m_panel7.SetSizer( bSizer22 )
+		self.m_panel7.Layout()
+		bSizer22.Fit( self.m_panel7 )
+		self.m_notebook_info.AddPage( self.m_panel7, u"接头", False )
+		self.m_panel14 = wx.Panel( self.m_notebook_info, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer30 = wx.BoxSizer( wx.VERTICAL )
+
+		self.m_staticText8 = wx.StaticText( self.m_panel14, wx.ID_ANY, u"左上角横坐标", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText8.Wrap( -1 )
+
+		bSizer30.Add( self.m_staticText8, 0, wx.ALL, 5 )
+
+		self.m_textCtrl_pic_x = wx.TextCtrl( self.m_panel14, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer30.Add( self.m_textCtrl_pic_x, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.m_staticText9 = wx.StaticText( self.m_panel14, wx.ID_ANY, u"左上角纵坐标", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText9.Wrap( -1 )
+
+		bSizer30.Add( self.m_staticText9, 0, wx.ALL, 5 )
+
+		self.m_textCtrl_pic_y = wx.TextCtrl( self.m_panel14, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer30.Add( self.m_textCtrl_pic_y, 0, wx.ALL|wx.EXPAND, 5 )
+
+
+		self.m_panel14.SetSizer( bSizer30 )
+		self.m_panel14.Layout()
+		bSizer30.Fit( self.m_panel14 )
+		self.m_notebook_info.AddPage( self.m_panel14, u"立绘坐标", True )
+		self.m_panel_face = wx.Panel( self.m_notebook_info, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer23 = wx.BoxSizer( wx.VERTICAL )
+
+		self.m_bitmap_face = wx.StaticBitmap( self.m_panel_face, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer23.Add( self.m_bitmap_face, 1, wx.ALL|wx.EXPAND, 5 )
+
+
+		self.m_panel_face.SetSizer( bSizer23 )
+		self.m_panel_face.Layout()
+		bSizer23.Fit( self.m_panel_face )
+		self.m_notebook_info.AddPage( self.m_panel_face, u"头预览", False )
+
+		bSizer20.Add( self.m_notebook_info, 1, wx.EXPAND |wx.ALL, 5 )
+
+		self.m_staticline18 = wx.StaticLine( self.m_panel6, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_VERTICAL )
+		bSizer20.Add( self.m_staticline18, 0, wx.EXPAND |wx.ALL, 5 )
+
+		self.m_staticText6 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"导入的面部表情", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText6.Wrap( -1 )
+
+		bSizer20.Add( self.m_staticText6, 0, wx.ALL, 5 )
+
+		m_listBox_import_faceChoices = []
+		self.m_listBox_import_face = wx.ListBox( self.m_panel6, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, m_listBox_import_faceChoices, wx.LB_HSCROLL|wx.LB_NEEDED_SB )
+		bSizer20.Add( self.m_listBox_import_face, 1, wx.ALL|wx.EXPAND, 5 )
+
+
+		self.m_panel6.SetSizer( bSizer20 )
+		self.m_panel6.Layout()
+		bSizer20.Fit( self.m_panel6 )
+		bSizer26.Add( self.m_panel6, 1, wx.ALL|wx.ALIGN_RIGHT|wx.EXPAND, 5 )
+
+
+		bSizer17.Add( bSizer26, 1, wx.EXPAND, 5 )
+
+		self.m_staticline19 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		bSizer17.Add( self.m_staticline19, 0, wx.EXPAND |wx.ALL, 5 )
+
+		bSizer27 = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_staticText_info = wx.StaticText( self, wx.ID_ANY, u"NONE", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText_info.Wrap( -1 )
+
+		bSizer27.Add( self.m_staticText_info, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+
+		self.m_staticline20 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_VERTICAL )
+		bSizer27.Add( self.m_staticline20, 0, wx.EXPAND |wx.ALL, 5 )
+
+		self.m_staticText10 = wx.StaticText( self, wx.ID_ANY, u"步长：", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText10.Wrap( -1 )
+
+		bSizer27.Add( self.m_staticText10, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+
+		m_choice_stepChoices = [ u"1", u"25", u"100", u"250" ]
+		self.m_choice_step = wx.Choice( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, m_choice_stepChoices, 0 )
+		self.m_choice_step.SetSelection( 0 )
+		bSizer27.Add( self.m_choice_step, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+
+		self.m_staticline21 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_VERTICAL )
+		bSizer27.Add( self.m_staticline21, 0, wx.EXPAND |wx.ALL, 5 )
+
+		self.m_button_export = wx.Button( self, wx.ID_ANY, u"导出", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer27.Add( self.m_button_export, 0, wx.ALL|wx.EXPAND, 5 )
+
+
+		bSizer17.Add( bSizer27, 0, wx.EXPAND, 5 )
+
+
+		self.SetSizer( bSizer17 )
+		self.Layout()
 
 		self.Centre( wx.BOTH )
 
+		# Connect Events
+		self.Bind( wx.EVT_INIT_DIALOG, self.initial )
+		self.m_bitmap_main_view.Bind( wx.EVT_ERASE_BACKGROUND, self.on_erase )
+		self.m_textCtrl_x_value.Bind( wx.EVT_MOUSEWHEEL, self.wheel_x )
+		self.m_textCtrl_x_value.Bind( wx.EVT_TEXT, self.value_check_x )
+		self.m_textCtrl_x_value.Bind( wx.EVT_TEXT_ENTER, self.x_value )
+		self.m_textCtrl_y_value.Bind( wx.EVT_MOUSEWHEEL, self.y_wheel )
+		self.m_textCtrl_y_value.Bind( wx.EVT_TEXT, self.value_check_y )
+		self.m_textCtrl_y_value.Bind( wx.EVT_TEXT_ENTER, self.y_value )
+		self.m_textCtrl_pic_x.Bind( wx.EVT_MOUSEWHEEL, self.px_wheel )
+		self.m_textCtrl_pic_x.Bind( wx.EVT_TEXT, self.value_check_px )
+		self.m_textCtrl_pic_y.Bind( wx.EVT_MOUSEWHEEL, self.py_wheel )
+		self.m_textCtrl_pic_y.Bind( wx.EVT_TEXT, self.value_check_py )
+		self.m_listBox_import_face.Bind( wx.EVT_LISTBOX, self.view_face )
+		self.m_listBox_import_face.Bind( wx.EVT_LISTBOX_DCLICK, self.select_face )
+		self.m_choice_step.Bind( wx.EVT_CHOICE, self.set_step )
+		self.m_button_export.Bind( wx.EVT_BUTTON, self.export )
+
 	def __del__( self ):
 		pass
+
+
+	# Virtual event handlers, overide them in your derived class
+	def initial( self, event ):
+		event.Skip()
+
+	def on_erase( self, event ):
+		event.Skip()
+
+	def wheel_x( self, event ):
+		event.Skip()
+
+	def value_check_x( self, event ):
+		event.Skip()
+
+	def x_value( self, event ):
+		event.Skip()
+
+	def y_wheel( self, event ):
+		event.Skip()
+
+	def value_check_y( self, event ):
+		event.Skip()
+
+	def y_value( self, event ):
+		event.Skip()
+
+	def px_wheel( self, event ):
+		event.Skip()
+
+	def value_check_px( self, event ):
+		event.Skip()
+
+	def py_wheel( self, event ):
+		event.Skip()
+
+	def value_check_py( self, event ):
+		event.Skip()
+
+	def view_face( self, event ):
+		event.Skip()
+
+	def select_face( self, event ):
+		event.Skip()
+
+	def set_step( self, event ):
+		event.Skip()
+
+	def export( self, event ):
+		event.Skip()
 
 

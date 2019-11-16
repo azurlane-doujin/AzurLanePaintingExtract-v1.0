@@ -40,7 +40,11 @@ class PerInfo(BasicInfo):
         self.more_tex_per_id = []
         self.mesh_id = ...
         self.more_mesh_per_id = []
-        self.independent_ID = ...
+
+        self.action_group = [
+            "independent",
+            "face_match"
+        ]
         # 是否以中文保存
         self._is_save_as_cn = True
 
@@ -130,8 +134,11 @@ class PerInfo(BasicInfo):
             val = tree.AppendItem(more_mesh_id, each_path)
             self.more_mesh_per_id.append(val)
         # 功能键
-        self.independent_ID = tree.AppendItem(self.tree_ID, "将当前的组合独立")
-        tree.SetItemTextColour(self.independent_ID, wx.Colour(255, 0, 166))
+        independent = self.action_group[self.data.at_independent] = tree.AppendItem(self.tree_ID, "将当前的组合独立")
+        tree.SetItemTextColour(independent, wx.Colour(255, 0, 166))
+
+        face_match = self.action_group[self.data.at_face_match] = tree.AppendItem(self.tree_ID, "为当前立绘添加附加表情")
+        tree.SetItemTextColour(face_match, wx.Colour(255, 0, 166))
 
     def get_select(self, type_is: bool):
         """
@@ -252,13 +259,14 @@ class PerWorkList(BasicInfoList):
         target = None
         for value in self:
             # 如果id为以下的部分，进入
-            if id == value.independent_ID:
+            if id in value.action_group:
                 target = value
                 break
         if target is None:
             return False, -1, target
-        if id == target.independent_ID:
-            return True, self.data.at_independent, target
+        else:
+            index = target.action_group.index(id)
+            return True, index, target
 
     # 添加部分
     def set_tex(self, value, name=None):

@@ -56,3 +56,33 @@ class DragOrder(wx.FileDropTarget):
         else:
 
             return True
+
+
+class FaceDragOrder(wx.FileDropTarget):
+    def __init__(self, parent, callback):
+        self.parent = parent
+        self.callback = callback
+        super(FaceDragOrder, self).__init__()
+
+    def OnDropFiles(self, x, y, filenames):
+        filenames = list(filenames)
+        data = {}
+        is_all_only = True
+        files = filter(lambda val: os.path.isfile(val), filenames)
+
+        match_pattern = re.compile(r'^(\d+)(\s#\d+?)?\.(?:png|PNG)$')
+        for value in files:
+            file_name = os.path.basename(value)
+            matched = match_pattern.match(file_name)
+            if matched is None:
+                continue
+            count = (matched.group(1))
+            if count in data.keys():
+                data[count].append(value)
+                is_all_only = False
+            else:
+                data[count] = [value]
+
+        self.callback(data, is_all_only)
+
+        return True

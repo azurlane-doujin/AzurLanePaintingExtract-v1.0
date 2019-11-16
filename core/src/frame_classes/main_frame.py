@@ -7,6 +7,7 @@ import time
 import wx
 
 from core.src.frame_classes.design_frame import MainFrame as Mf
+from core.src.frame_classes.face_match_frame import FaceMatchFrame
 from core.src.frame_classes.setting_frame import Setting
 from core.src.static_classes.file_read import FileFilter
 from core.src.static_classes.search_order import SearchOrder
@@ -119,6 +120,7 @@ class MainFrame(Mf):
             self.m_treeCtrl_info.SetItemTextColour(target.key, wx.Colour(255, 255, 255))
         return True
 
+    # action 响应函数
     def independent_target(self, target):
         """
         新建独立目标（新建一个和目标相同的独立对象）
@@ -138,6 +140,14 @@ class MainFrame(Mf):
                 self.independent_target(target)
             else:
                 target.independent(name, self.m_treeCtrl_info, self.root)
+
+    def face_match_target(self, target):
+        if not target.is_able_work:
+            self.m_staticText_info.SetLabel("换头失败！必须是可还原对象")
+            return
+        self.m_staticText_info.SetLabel("开始换头！")
+        self.__dialog=FaceMatchFrame(self,target)
+        self.__dialog.ShowModal()
 
     # 以下为原有函数
     def restart(self):
@@ -318,6 +328,8 @@ class MainFrame(Mf):
                         print(target.name)
                         if type_is == self.data.at_independent:
                             self.independent_target(target)
+                        if type_is == self.data.at_face_match:
+                            self.face_match_target(target)
 
     def choice_file(self, event):
         # 选择对应文件
@@ -481,7 +493,7 @@ class MainFrame(Mf):
         self.__dialog.ShowModal()
         # 重置设置
         self.setting_info = self.__dialog.get_setting()
-        self.names=self.__dialog.get_names()
+        self.names = self.__dialog.get_names()
 
     def resize(self, event):
         """

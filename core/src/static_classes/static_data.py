@@ -33,6 +33,10 @@ class GlobalData:
     def at_independent(self):
         return 0
 
+    @property
+    def at_face_match(self):
+        return 1
+
     # tree_filter
     @property
     def tf_all(self):
