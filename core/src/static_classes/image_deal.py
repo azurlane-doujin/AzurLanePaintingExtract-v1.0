@@ -1,3 +1,5 @@
+import json
+import re
 from functools import reduce
 
 import PIL.Image
@@ -51,14 +53,17 @@ class ImageWork(object):
         return division
 
     @staticmethod
-    def az_paint_restore(mesh_path: str, tex_path: str):
+    def az_paint_restore(mesh_path: str, tex_path: str, must_able=False):
         """
         a higher func version for extract AzurLane painting
+        :param must_able: is a must able item,just return image and do not have any action
         :param mesh_path: mesh_file address,str
         :param tex_path: texture file address
         :return: PIL.Image -> the final pic
         """
         img = PIL.Image.open(tex_path)
+        if must_able:
+            return img
 
         size = img.size
 
@@ -102,7 +107,8 @@ class ImageWork(object):
         """拼图用的函数
         """
         try:
-            pic = ImageWork.az_paint_restore(now_info.mesh_path, now_info.tex_path)
+            must_able = not now_info.get_is_able_work() and now_info.must_able
+            pic = ImageWork.az_paint_restore(now_info.mesh_path, now_info.tex_path, must_able)
 
             pic.save(now_info.save_path)
         except RuntimeError as info:
@@ -133,15 +139,65 @@ class ImageWork(object):
         return ImageWork.pic_size_transform(pic, size)
 
     @staticmethod
-    def pic_size_transform(pic, size):
+    def pic_size_transform(pic, size, is_resize=True):
         pic_size = pic.size
         bg = PIL.Image.new("RGBA", size, (255, 255, 255, 0))
 
-        scale = min(bg.size[0] / pic.size[0], bg.size[1] / pic.size[1])
-        size = (round(pic.size[0] * scale), round(pic.size[1] * scale))
+        if is_resize:
+            scale = min(bg.size[0] / pic.size[0], bg.size[1] / pic.size[1])
+            size = (round(pic.size[0] * scale), round(pic.size[1] * scale))
+            pic = pic.resize(size, PIL.Image.ANTIALIAS)
 
-        pic = pic.resize(size, PIL.Image.ANTIALIAS)
         x = round(bg.size[0] / 2 - pic.size[0] / 2)
         y = round(bg.size[1] / 2 - pic.size[1] / 2)
         bg.paste(pic, (x, y, x + pic.size[0], y + pic.size[1]))
         return bg, pic_size
+
+    @staticmethod
+    def atlas_split_main(img, atlas_file):
+        """
+        切割小人的主要函数
+        :param img: 输入的PIL图像
+        :param atlas_file: atlas文件路径
+        :return:
+        """
+        info_pattern = re.compile(r'(.+)\n'
+                                  r'\s{2}rotate:\s(false|true)\n'
+                                  r'\s{2}xy:\s(\d+),\s(\d+)\n'
+                                  r'\s{2}size:\s(\d+),\s(\d+)\n'
+                                  r'\s{2}orig:\s\d+,\s\d+\n'
+                                  r'\s{2}offset:\s0,\s0\n'
+                                  r'\s{2}index:\s-1')
+        group = {}
+
+        # 加载分割文件
+        with open(atlas_file, 'r', encoding="utf-8")as files:
+            file_work = files.read()
+
+        info = info_pattern.findall(file_work)
+
+        for body in info:
+            mod_name = body[0]
+            group[mod_name] = {}
+            group[mod_name]['rotate'] = json.loads(body[1])
+            group[mod_name]['xy'] = [int(body[2]), int(body[3])]
+            group[mod_name]['size'] = [int(body[4]), int(body[5])]
+
+        values = {}
+        for var in group.keys():
+
+            xy = group[var]['xy']
+            size = group[var]['size']
+
+            if group[var]['rotate']:
+                rect = (xy[0], xy[1], size[1] + xy[0], size[0] + xy[1])
+            else:
+                rect = (xy[0], xy[1], size[0] + xy[0], size[1] + xy[1])
+
+            val = img.crop(rect)
+            if group[var]['rotate']:
+                val = val.rotate(-90, expand=True)
+
+            values[var] = val
+
+        return values

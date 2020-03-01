@@ -35,7 +35,7 @@ class QuickRestore(threading.Thread):
                 info_str = f"{self.info.cn_name}:无法预览"
             else:
                 size = self.size
-                if self.info.is_able_work:
+                if self.info.get_is_able_work():
                     pic, pic_size = ImageWork.restore_tool_no_save(self.info.mesh_path, self.info.tex_path, size)
                     info_str = f"可还原立绘预览：{self.info.cn_name}；尺寸：{pic_size}"
                 elif self.info.lay_in != '':

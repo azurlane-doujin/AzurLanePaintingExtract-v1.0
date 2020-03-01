@@ -36,6 +36,12 @@ class GlobalData:
     @property
     def at_face_match(self):
         return 1
+    @property
+    def at_atlas_split(self):
+        return 2
+    @property
+    def at_set_able(self):
+        return 3
 
     # tree_filter
     @property

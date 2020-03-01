@@ -124,6 +124,7 @@ class MainFrame ( wx.Frame ):
 
 		# Connect Events
 		self.Bind( wx.EVT_CLOSE, self.exit )
+		self.Bind( wx.EVT_KEY_DOWN, self.on_key_Down )
 		self.Bind( wx.EVT_MOVE_END, self.resize )
 		self.m_choice_filter.Bind( wx.EVT_CHOICE, self.filter_work )
 		self.m_searchCtrl1.Bind( wx.EVT_TEXT, self.search )
@@ -132,6 +133,8 @@ class MainFrame ( wx.Frame ):
 		self.m_button_work.Bind( wx.EVT_BUTTON, self.work )
 		self.m_button_change.Bind( wx.EVT_BUTTON, self.choice_file )
 		self.m_button_setting.Bind( wx.EVT_BUTTON, self.setting )
+		self.m_scrolledWindow2.Bind( wx.EVT_KEY_DOWN, self.on_key_dwon )
+		self.m_scrolledWindow2.Bind( wx.EVT_KEY_UP, self.on_key_dwon )
 
 	def __del__( self ):
 		pass
@@ -139,6 +142,9 @@ class MainFrame ( wx.Frame ):
 
 	# Virtual event handlers, overide them in your derived class
 	def exit( self, event ):
+		event.Skip()
+
+	def on_key_Down( self, event ):
 		event.Skip()
 
 	def resize( self, event ):
@@ -161,6 +167,123 @@ class MainFrame ( wx.Frame ):
 		event.Skip()
 
 	def setting( self, event ):
+		event.Skip()
+
+	def on_key_dwon( self, event ):
+		event.Skip()
+
+
+
+###########################################################################
+## Class MyDialogAtlasSpilt
+###########################################################################
+
+class MyDialogAtlasSpilt ( wx.Dialog ):
+
+	def __init__( self, parent ):
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"atlas切割工具", pos = wx.DefaultPosition, size = wx.Size( 512,256 ), style = wx.DEFAULT_DIALOG_STYLE )
+
+		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+
+		bSizer30 = wx.BoxSizer( wx.VERTICAL )
+
+		bSizer31 = wx.BoxSizer( wx.VERTICAL )
+
+		bSizer32 = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_panel8 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer33 = wx.BoxSizer( wx.VERTICAL )
+
+		self.m_staticText_target_name = wx.StaticText( self.m_panel8, wx.ID_ANY, u"目标名称：None", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText_target_name.Wrap( -1 )
+
+		bSizer33.Add( self.m_staticText_target_name, 0, wx.ALL, 5 )
+
+		self.m_filePicker_target_atlas = wx.FilePickerCtrl( self.m_panel8, wx.ID_ANY, wx.EmptyString, u"Select a file", u"atlas切割信息文件(*.atlas;*.atlas.txt)|*.atlas;*.atlas.txt", wx.DefaultPosition, wx.DefaultSize, wx.FLP_CHANGE_DIR|wx.FLP_DEFAULT_STYLE|wx.FLP_FILE_MUST_EXIST|wx.FLP_OPEN|wx.FLP_SMALL|wx.FLP_USE_TEXTCTRL )
+		bSizer33.Add( self.m_filePicker_target_atlas, 0, wx.ALL|wx.EXPAND, 5 )
+
+		m_listBox_spilt_itemsChoices = []
+		self.m_listBox_spilt_items = wx.ListBox( self.m_panel8, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, m_listBox_spilt_itemsChoices, 0 )
+		bSizer33.Add( self.m_listBox_spilt_items, 1, wx.ALL|wx.EXPAND, 5 )
+
+
+		self.m_panel8.SetSizer( bSizer33 )
+		self.m_panel8.Layout()
+		bSizer33.Fit( self.m_panel8 )
+		bSizer32.Add( self.m_panel8, 1, wx.EXPAND |wx.ALL, 5 )
+
+		self.m_staticline27 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL|wx.LI_VERTICAL )
+		bSizer32.Add( self.m_staticline27, 0, wx.EXPAND |wx.ALL, 5 )
+
+		self.m_bitmap_show = wx.StaticBitmap( self, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer32.Add( self.m_bitmap_show, 1, wx.ALL|wx.EXPAND, 5 )
+
+
+		bSizer31.Add( bSizer32, 1, wx.EXPAND, 5 )
+
+		self.m_staticline28 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		bSizer31.Add( self.m_staticline28, 0, wx.EXPAND |wx.ALL, 5 )
+
+		bSizer34 = wx.BoxSizer( wx.HORIZONTAL )
+
+		m_sdbSizer2 = wx.StdDialogButtonSizer()
+		self.m_sdbSizer2Save = wx.Button( self, wx.ID_SAVE )
+		m_sdbSizer2.AddButton( self.m_sdbSizer2Save )
+		self.m_sdbSizer2Cancel = wx.Button( self, wx.ID_CANCEL )
+		m_sdbSizer2.AddButton( self.m_sdbSizer2Cancel )
+		m_sdbSizer2.Realize();
+
+		bSizer34.Add( m_sdbSizer2, 0, 0, 5 )
+
+		self.m_staticline29 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL|wx.LI_VERTICAL )
+		bSizer34.Add( self.m_staticline29, 0, wx.EXPAND |wx.ALL, 5 )
+
+		self.m_staticText_info = wx.StaticText( self, wx.ID_ANY, u"就绪", wx.DefaultPosition, wx.DefaultSize, wx.ST_ELLIPSIZE_END )
+		self.m_staticText_info.Wrap( -1 )
+
+		bSizer34.Add( self.m_staticText_info, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+
+
+		bSizer31.Add( bSizer34, 0, wx.EXPAND, 5 )
+
+
+		bSizer30.Add( bSizer31, 1, wx.EXPAND, 5 )
+
+
+		self.SetSizer( bSizer30 )
+		self.Layout()
+
+		self.Centre( wx.BOTH )
+
+		# Connect Events
+		self.Bind( wx.EVT_KEY_DOWN, self.on_key_down )
+		self.m_filePicker_target_atlas.Bind( wx.EVT_FILEPICKER_CHANGED, self.load_atlas )
+		self.m_listBox_spilt_items.Bind( wx.EVT_LISTBOX, self.view_item )
+		self.m_listBox_spilt_items.Bind( wx.EVT_LISTBOX_DCLICK, self.save_item )
+		self.m_sdbSizer2Cancel.Bind( wx.EVT_BUTTON, self.exit )
+		self.m_sdbSizer2Save.Bind( wx.EVT_BUTTON, self.save_all )
+
+	def __del__( self ):
+		pass
+
+
+	# Virtual event handlers, overide them in your derived class
+	def on_key_down( self, event ):
+		event.Skip()
+
+	def load_atlas( self, event ):
+		event.Skip()
+
+	def view_item( self, event ):
+		event.Skip()
+
+	def save_item( self, event ):
+		event.Skip()
+
+	def exit( self, event ):
+		event.Skip()
+
+	def save_all( self, event ):
 		event.Skip()
 
 
@@ -213,23 +336,6 @@ class MyDialogSetting ( wx.Dialog ):
 		self.m_bitmap2 = wx.StaticBitmap( self.m_panel2, wx.ID_ANY, wx.ArtProvider.GetBitmap( wx.ART_MISSING_IMAGE, wx.ART_OTHER ), wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer10.Add( self.m_bitmap2, 1, wx.ALL|wx.EXPAND, 5 )
 
-		self.m_staticline11 = wx.StaticLine( self.m_panel2, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
-		bSizer10.Add( self.m_staticline11, 0, wx.EXPAND |wx.ALL, 5 )
-
-		bSizer12 = wx.BoxSizer( wx.HORIZONTAL )
-
-		self.m_button_updata_names = wx.Button( self.m_panel2, wx.ID_ANY, u"在线更新键-值对", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer12.Add( self.m_button_updata_names, 0, wx.ALL, 5 )
-
-		self.m_staticline12 = wx.StaticLine( self.m_panel2, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_VERTICAL )
-		bSizer12.Add( self.m_staticline12, 0, wx.EXPAND |wx.ALL, 5 )
-
-		self.m_button_edit_names = wx.Button( self.m_panel2, wx.ID_ANY, u"编辑键-值对", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer12.Add( self.m_button_edit_names, 0, wx.ALL, 5 )
-
-
-		bSizer10.Add( bSizer12, 0, wx.ALIGN_CENTER_HORIZONTAL, 5 )
-
 
 		self.m_panel2.SetSizer( bSizer10 )
 		self.m_panel2.Layout()
@@ -242,18 +348,48 @@ class MyDialogSetting ( wx.Dialog ):
 		self.m_panel3 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		bSizer11 = wx.BoxSizer( wx.VERTICAL )
 
-		m_radioBox_input_filterChoices = [ u"全部立绘", u"全部初始皮肤", u"全部皮肤", u"全部改造立绘", u"全部誓约立绘", u"全部幼女化立绘", u"全部μ兵装立绘", u"其他立绘" ]
-		self.m_radioBox_input_filter = wx.RadioBox( self.m_panel3, wx.ID_ANY, u"导入文件筛选", wx.DefaultPosition, wx.DefaultSize, m_radioBox_input_filterChoices, 1, wx.RA_SPECIFY_COLS )
-		self.m_radioBox_input_filter.SetSelection( 5 )
-		bSizer11.Add( self.m_radioBox_input_filter, 1, wx.ALL|wx.EXPAND, 5 )
+		self.m_staticText13 = wx.StaticText( self.m_panel3, wx.ID_ANY, u"导入文件筛选", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText13.Wrap( -1 )
+
+		bSizer11.Add( self.m_staticText13, 0, wx.ALL, 5 )
+
+		m_choice_inport_filterChoices = [ u"全部立绘", u"全部初始皮肤", u"全部皮肤", u"全部改造立绘", u"全部誓约立绘", u"全部幼女化立绘", u"全部μ兵装立绘", u"其他立绘" ]
+		self.m_choice_inport_filter = wx.Choice( self.m_panel3, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, m_choice_inport_filterChoices, 0 )
+		self.m_choice_inport_filter.SetSelection( 0 )
+		bSizer11.Add( self.m_choice_inport_filter, 0, wx.ALL|wx.EXPAND, 5 )
 
 		self.m_staticline9 = wx.StaticLine( self.m_panel3, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
 		bSizer11.Add( self.m_staticline9, 0, wx.EXPAND |wx.ALL, 5 )
 
-		m_radioBox_output_groupChoices = [ u"不分类", u"按舰娘名称分类", u"按立绘类型分类" ]
-		self.m_radioBox_output_group = wx.RadioBox( self.m_panel3, wx.ID_ANY, u"导出文件分类", wx.DefaultPosition, wx.DefaultSize, m_radioBox_output_groupChoices, 1, wx.RA_SPECIFY_COLS )
-		self.m_radioBox_output_group.SetSelection( 0 )
-		bSizer11.Add( self.m_radioBox_output_group, 1, wx.ALL|wx.EXPAND, 5 )
+		self.m_staticText14 = wx.StaticText( self.m_panel3, wx.ID_ANY, u"导出文件分类", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText14.Wrap( -1 )
+
+		bSizer11.Add( self.m_staticText14, 0, wx.ALL, 5 )
+
+		m_choice_export_divisionChoices = [ u"不分类", u"按舰娘名称分类", u"按立绘类型分类" ]
+		self.m_choice_export_division = wx.Choice( self.m_panel3, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, m_choice_export_divisionChoices, 0 )
+		self.m_choice_export_division.SetSelection( 0 )
+		bSizer11.Add( self.m_choice_export_division, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.m_staticline27 = wx.StaticLine( self.m_panel3, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		bSizer11.Add( self.m_staticline27, 0, wx.EXPAND |wx.ALL, 5 )
+
+		bSizer12 = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_button_updata_names = wx.Button( self.m_panel3, wx.ID_ANY, u"更新本地化资源", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer12.Add( self.m_button_updata_names, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+
+		self.m_staticline12 = wx.StaticLine( self.m_panel3, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_VERTICAL )
+		bSizer12.Add( self.m_staticline12, 0, wx.EXPAND |wx.ALL, 5 )
+
+		self.m_button_edit_names = wx.Button( self.m_panel3, wx.ID_ANY, u"编辑本地化资源", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer12.Add( self.m_button_edit_names, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+
+
+		bSizer11.Add( bSizer12, 0, wx.EXPAND, 5 )
+
+		self.m_staticline271 = wx.StaticLine( self.m_panel3, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		bSizer11.Add( self.m_staticline271, 0, wx.EXPAND |wx.ALL, 5 )
 
 
 		self.m_panel3.SetSizer( bSizer11 )
@@ -286,6 +422,8 @@ class MyDialogSetting ( wx.Dialog ):
 
 		# Connect Events
 		self.Bind( wx.EVT_INIT_DIALOG, self.set_info )
+		self.m_choice_inport_filter.Bind( wx.EVT_CHOICE, self.import_filter )
+		self.m_choice_export_division.Bind( wx.EVT_CHOICE, self.output_group )
 		self.m_button_updata_names.Bind( wx.EVT_BUTTON, self.update_names )
 		self.m_button_edit_names.Bind( wx.EVT_BUTTON, self.edit_names )
 		self.m_sdbSizer1Apply.Bind( wx.EVT_BUTTON, self.apply_press )
@@ -298,6 +436,12 @@ class MyDialogSetting ( wx.Dialog ):
 
 	# Virtual event handlers, overide them in your derived class
 	def set_info( self, event ):
+		event.Skip()
+
+	def import_filter( self, event ):
+		event.Skip()
+
+	def output_group( self, event ):
 		event.Skip()
 
 	def update_names( self, event ):
@@ -538,6 +682,15 @@ class MyDialogAddFace ( wx.Dialog ):
 		self.m_listBox_import_face = wx.ListBox( self.m_panel6, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, m_listBox_import_faceChoices, wx.LB_HSCROLL|wx.LB_NEEDED_SB )
 		bSizer20.Add( self.m_listBox_import_face, 1, wx.ALL|wx.EXPAND, 5 )
 
+		self.m_staticline23 = wx.StaticLine( self.m_panel6, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_VERTICAL )
+		bSizer20.Add( self.m_staticline23, 0, wx.EXPAND |wx.ALL, 5 )
+
+		self.m_checkBox_alpha = wx.CheckBox( self.m_panel6, wx.ID_ANY, u"透明背景叠加", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_RIGHT )
+		bSizer20.Add( self.m_checkBox_alpha, 0, wx.ALL|wx.ALIGN_RIGHT, 5 )
+
+		self.m_checkBox_minosity_size = wx.CheckBox( self.m_panel6, wx.ID_ANY, u"以最小尺寸导出", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_RIGHT )
+		bSizer20.Add( self.m_checkBox_minosity_size, 0, wx.ALL|wx.ALIGN_RIGHT, 5 )
+
 
 		self.m_panel6.SetSizer( bSizer20 )
 		self.m_panel6.Layout()
@@ -588,6 +741,7 @@ class MyDialogAddFace ( wx.Dialog ):
 		# Connect Events
 		self.Bind( wx.EVT_INIT_DIALOG, self.initial )
 		self.m_bitmap_main_view.Bind( wx.EVT_ERASE_BACKGROUND, self.on_erase )
+		self.m_bitmap_main_view.Bind( wx.EVT_LEFT_DCLICK, self.set_face_place )
 		self.m_textCtrl_x_value.Bind( wx.EVT_MOUSEWHEEL, self.wheel_x )
 		self.m_textCtrl_x_value.Bind( wx.EVT_TEXT, self.value_check_x )
 		self.m_textCtrl_x_value.Bind( wx.EVT_TEXT_ENTER, self.x_value )
@@ -600,6 +754,7 @@ class MyDialogAddFace ( wx.Dialog ):
 		self.m_textCtrl_pic_y.Bind( wx.EVT_TEXT, self.value_check_py )
 		self.m_listBox_import_face.Bind( wx.EVT_LISTBOX, self.view_face )
 		self.m_listBox_import_face.Bind( wx.EVT_LISTBOX_DCLICK, self.select_face )
+		self.m_checkBox_alpha.Bind( wx.EVT_CHECKBOX, self.change_method )
 		self.m_choice_step.Bind( wx.EVT_CHOICE, self.set_step )
 		self.m_button_export.Bind( wx.EVT_BUTTON, self.export )
 
@@ -612,6 +767,9 @@ class MyDialogAddFace ( wx.Dialog ):
 		event.Skip()
 
 	def on_erase( self, event ):
+		event.Skip()
+
+	def set_face_place( self, event ):
 		event.Skip()
 
 	def wheel_x( self, event ):
@@ -650,10 +808,154 @@ class MyDialogAddFace ( wx.Dialog ):
 	def select_face( self, event ):
 		event.Skip()
 
+	def change_method( self, event ):
+		event.Skip()
+
 	def set_step( self, event ):
 		event.Skip()
 
 	def export( self, event ):
+		event.Skip()
+
+
+###########################################################################
+## Class MyDialogUpdateLocation
+###########################################################################
+
+class MyDialogUpdateLocation ( wx.Dialog ):
+
+	def __init__( self, parent ):
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"更新本地化文件", pos = wx.DefaultPosition, size = wx.Size( 628,256 ), style = wx.DEFAULT_DIALOG_STYLE )
+
+		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+
+		bSizer25 = wx.BoxSizer( wx.VERTICAL )
+
+		bSizer29 = wx.BoxSizer( wx.HORIZONTAL )
+
+		bSizer26 = wx.BoxSizer( wx.VERTICAL )
+
+		self.m_staticText11 = wx.StaticText( self, wx.ID_ANY, u"可选的本地化", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText11.Wrap( -1 )
+
+		bSizer26.Add( self.m_staticText11, 0, wx.ALL|wx.EXPAND, 5 )
+
+		m_listBox_selectChoices = [ u"OSSSY152" ]
+		self.m_listBox_select = wx.ListBox( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, m_listBox_selectChoices, 0 )
+		bSizer26.Add( self.m_listBox_select, 1, wx.ALL, 5 )
+
+		self.m_staticline25 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		bSizer26.Add( self.m_staticline25, 0, wx.EXPAND |wx.ALL, 5 )
+
+		self.m_button_load_file = wx.Button( self, wx.ID_ANY, u"加载文件", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer26.Add( self.m_button_load_file, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 5 )
+
+
+		bSizer29.Add( bSizer26, 0, wx.EXPAND, 5 )
+
+		self.m_staticline21 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL|wx.LI_VERTICAL )
+		bSizer29.Add( self.m_staticline21, 0, wx.EXPAND |wx.ALL, 5 )
+
+		bSizer27 = wx.BoxSizer( wx.VERTICAL )
+
+		self.m_treeCtrl_info = wx.TreeCtrl( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TR_DEFAULT_STYLE|wx.TR_HIDE_ROOT|wx.TR_TWIST_BUTTONS )
+		bSizer27.Add( self.m_treeCtrl_info, 1, wx.ALL|wx.EXPAND, 5 )
+
+
+		bSizer29.Add( bSizer27, 1, wx.EXPAND, 5 )
+
+		self.m_staticline22 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL|wx.LI_VERTICAL )
+		bSizer29.Add( self.m_staticline22, 0, wx.EXPAND |wx.ALL, 5 )
+
+		bSizer28 = wx.BoxSizer( wx.VERTICAL )
+
+		self.m_button_apply_all = wx.Button( self, wx.ID_ANY, u"应用-全部", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer28.Add( self.m_button_apply_all, 0, wx.ALL, 5 )
+
+		self.m_button_apply_new = wx.Button( self, wx.ID_ANY, u"应用-新增", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer28.Add( self.m_button_apply_new, 0, wx.ALL, 5 )
+
+		self.m_button_apply_cover = wx.Button( self, wx.ID_ANY, u"应用-覆盖", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer28.Add( self.m_button_apply_cover, 0, wx.ALL, 5 )
+
+		self.m_button_cancel = wx.Button( self, wx.ID_ANY, u"取消", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer28.Add( self.m_button_cancel, 0, wx.ALL, 5 )
+
+
+		bSizer29.Add( bSizer28, 0, wx.EXPAND, 5 )
+
+
+		bSizer25.Add( bSizer29, 1, wx.EXPAND, 5 )
+
+		self.m_staticline24 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		bSizer25.Add( self.m_staticline24, 0, wx.EXPAND |wx.ALL, 5 )
+
+		self.m_staticText_info = wx.StaticText( self, wx.ID_ANY, u"None", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText_info.Wrap( -1 )
+
+		bSizer25.Add( self.m_staticText_info, 0, wx.ALL|wx.EXPAND, 5 )
+
+
+		self.SetSizer( bSizer25 )
+		self.Layout()
+
+		self.Centre( wx.BOTH )
+
+		# Connect Events
+		self.m_listBox_select.Bind( wx.EVT_LISTBOX_DCLICK, self.request_info )
+		self.m_button_load_file.Bind( wx.EVT_BUTTON, self.load_file )
+		self.m_button_apply_all.Bind( wx.EVT_BUTTON, self.apply_all )
+		self.m_button_apply_new.Bind( wx.EVT_BUTTON, self.apply_new )
+		self.m_button_apply_cover.Bind( wx.EVT_BUTTON, self.apply_cover )
+		self.m_button_cancel.Bind( wx.EVT_BUTTON, self.cancel )
+
+	def __del__( self ):
+		pass
+
+
+	# Virtual event handlers, overide them in your derived class
+	def request_info( self, event ):
+		event.Skip()
+
+	def load_file( self, event ):
+		event.Skip()
+
+	def apply_all( self, event ):
+		event.Skip()
+
+	def apply_new( self, event ):
+		event.Skip()
+
+	def apply_cover( self, event ):
+		event.Skip()
+
+	def cancel( self, event ):
+		event.Skip()
+
+
+###########################################################################
+## Class MyDialog6
+###########################################################################
+
+class MyDialog6 ( wx.Dialog ):
+
+	def __init__( self, parent ):
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE )
+
+		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+
+
+		self.Centre( wx.BOTH )
+
+		# Connect Events
+		self.Bind( wx.EVT_KEY_DOWN, self.on_key_down )
+
+	def __del__( self ):
+		pass
+
+
+	# Virtual event handlers, overide them in your derived class
+	def on_key_down( self, event ):
 		event.Skip()
 
 

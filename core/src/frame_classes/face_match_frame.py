@@ -2,8 +2,9 @@ import os
 import re
 from threading import Thread
 
+import numpy
 import wx
-from PIL import Image
+from PIL import Image, ImageChops
 
 from core.src.static_classes.image_deal import ImageWork
 from core.src.structs_classes.drop_order import FaceDragOrder
@@ -23,7 +24,8 @@ class FaceMatchFrame(MyDialogAddFace):
         self.is_all_only = True
 
         # 生成目标立绘
-        self.target_img = ImageWork.az_paint_restore(target.mesh_path, target.tex_path)
+        self.target_img = ImageWork.az_paint_restore(target.mesh_path, target.tex_path,
+                                                     not target.get_is_able_work() and target.must_able)
         self.target_size = self.target_img.size
         # 目标表情
         self.target_face = Image.Image()
@@ -61,7 +63,49 @@ class FaceMatchFrame(MyDialogAddFace):
         self.step = 1
         self.save_path = ""
 
+        self.is_alpha_paste = False
+
         self.m_bitmap_main_view.SetDoubleBuffered(True)
+
+    @staticmethod
+    def paste_face(target: Image.Image, face: Image.Image, pos: tuple):
+        """
+        透明混合背景和目标
+        :param target: 混合背景
+        :param face: 混合目标
+        :param pos: 混合目标绘制坐标点
+        :return: None
+        """
+        target_bg = target.crop([pos[0], pos[1], pos[0] + face.width, pos[1] + face.height])
+        alpha = face.getchannel("A")
+
+        # alpha处理
+        alpha_f = alpha
+        alpha_g = target_bg.getchannel("A")
+        a_f = ImageChops.lighter(alpha_f, alpha_g)
+
+        al = numpy.array(alpha, dtype=numpy.float)
+
+        scale = al / 255
+
+        face_a = numpy.array(face)
+        bg_a = numpy.array(target_bg)
+        alpha_data = numpy.array(a_f)
+
+        bg_a[:, :, 2] = bg_a[:, :, 2] * (1 - scale)
+        bg_a[:, :, 1] = bg_a[:, :, 1] * (1 - scale)
+        bg_a[:, :, 0] = bg_a[:, :, 0] * (1 - scale)
+
+        face_a[:, :, 0] = face_a[:, :, 0] * scale
+        face_a[:, :, 1] = face_a[:, :, 1] * scale
+        face_a[:, :, 2] = face_a[:, :, 2] * scale
+
+        f_target = bg_a + face_a
+        f_target[:, :, 3] = alpha_data
+
+        face_e = Image.fromarray(f_target)
+
+        target.paste(face_e, pos)
 
     # 背景扩展处理
     @property
@@ -71,46 +115,89 @@ class FaceMatchFrame(MyDialogAddFace):
     @bg_size.setter
     def bg_size(self, value):
         if len(value) == 2:
+            # 更新背景画布尺寸，重新绘制背景图片和脸部图片
             self._bg_size = value
-            self.bg_paint = Image.new("RGBA", self.bg_size, (0, 0, 0, 0))
-            self.bg_paint.paste(self.target_img, (self.target_paint_x, self.target_paint_y))
-            self.bg_paint.paste(self.target_face, (self.pos_x, self.pos_y))
+            print(value)
+            self.paste_target_face()
 
     # 换头坐标处理
     @property
     def pos_x(self):
         return self._pos_x
 
-    @pos_x.setter
-    def pos_x(self, value):
-        value = int(value)
-        if value < 0:
-            self.left_extend = -value
-            value = 0
-            self.m_staticText_info.SetLabel(f"画布向左扩展{self.left_extend}像素")
-        elif value + self.target_face.width - self.target_size[0] > 0:
-            self.right_extend = value + self.target_face.width - self.target_size[0]
-            value = self.target_size[0] - self.target_face.width
-            self.m_staticText_info.SetLabel(f"画布向右扩展{self.right_extend}像素")
-
-        self._pos_x = value
-        self.add_face()
-
     @property
     def pos_y(self):
         return self._pos_y
 
+    @pos_x.setter
+    def pos_x(self, value):
+        # 强行转义为int
+        value = int(value)
+        # 如果脸部绘制x坐标点小于0，将画布向左扩展对应的像素，再将x坐标归零
+        if value < 0:
+            self.left_extend += -value
+            value = 0
+            self.m_staticText_info.SetLabel(f"画布向左扩展{self.left_extend}像素")
+
+        # 如果脸部绘制x坐标+目标脸部的宽度大于当前画布总宽度，画布向右扩展，x值不变
+        elif value + self.target_face.width - self.bg_size[0] > 0:
+            self.right_extend += (value + self.target_face.width) - self.bg_size[0]
+
+            self.m_staticText_info.SetLabel(f"画布向右扩展{self.right_extend}像素")
+
+        # elif self.left_extend > 0 or self.right_extend > 0:
+        #    # 其他情况下，可能存在回缩状态
+        #    if self.left_extend > 0 and self.left_extend >= value:
+        #        # 当向左扩展大于0，x坐标点也大于0,且左侧扩展- x >=0，左侧扩展向右回缩，回缩值为当前x值，x归零
+        #        self.left_extend -= value
+        #        value = 0
+        #        self.m_staticText_info.SetLabel(f"画布向左扩展{self.left_extend}像素")
+        #
+        #    elif self.right_extend > 0 and \
+        #            self.bg_size[0] > (value + self.target_face.width) >= self.bg_size[0] - self.right_extend:
+        #        # 当向左扩展大于0，x坐标+面部表情<总画布宽度,且（画布宽度-向右扩展）《= x坐标+面部表情宽度;
+        #        # x最终坐标不变，向右扩展=总画布宽度-（x坐标+面部表情宽度）
+        #        self.right_extend -= self.bg_size[0] - (value + self.target_face.width)
+        #        self.m_staticText_info.SetLabel(f"画布向右扩展{self.right_extend}像素")
+
+        self._pos_x = value
+        self.add_face()
+
     @pos_y.setter
     def pos_y(self, value):
+        # 强行转义为int
         value = int(value)
+        # 如果脸部绘制y坐标点小于0，将画布向上扩展对应的像素，再将y坐标归零
         if value < 0:
-            self.top_extend = -value
+            self.top_extend += -value
             value = 0
             self.m_staticText_info.SetLabel(f"画布向上扩展{self.top_extend}像素")
-        elif value + self.target_face.height - self.target_size[1] > 0:
-            self.button_extend = value + self.target_face.height - self.target_size[1]
-            value = self.target_size[1] - self.target_face.height
+
+        # 如果脸部绘制y坐标+目标脸部的高度大于当前画布总高度，画布向下扩展，y值不变
+        elif value + self.target_face.height - self.bg_size[1] > 0:
+            self.button_extend = value + self.target_face.height - self.bg_size[1]
             self.m_staticText_info.SetLabel(f"画布向下扩展{self.button_extend}像素")
+
+        # elif self.top_extend > 0 or self.button_extend > 0:
+        #    # 其他情况下，可能存在回缩状态
+        #    if self.top_extend > 0:
+        #        # 当向上扩展大于0，y坐标点也大于0,且顶部扩展- y >=0，顶部扩展向下回缩，回缩值为当前y值，y归零
+        #        if self.top_extend >= value:
+        #            self.top_extend -= value
+        #        else:
+        #            self.top_extend = 0
+        #        value = 0
+        #        self.m_staticText_info.SetLabel(f"画布向上扩展{self.top_extend}像素")
+        #
+        #    elif self.button_extend > 0:
+        #        # 当向下扩展大于0，y坐标+面部表情高度<总画布高度,且（画布高度-向下扩展）《= y坐标+面部表情高度;
+        #        # y最终坐标不变，向下扩展-=总画布高度-（y坐标+面部表情高度）
+        #        if self.bg_size[1] > (value + self.target_face.height) > self.bg_size[1] - self.button_extend:
+        #            self.button_extend -= self.bg_size[1] - (value + self.target_face.height)
+        #        elif(value + self.target_face.height)<= self.bg_size[1] - self.button_extend:
+        #            self.button_extend = 0
+        #        self.m_staticText_info.SetLabel(f"画布向下扩展{self.button_extend}像素")
+
         self._pos_y = value
         self.add_face()
 
@@ -162,25 +249,29 @@ class FaceMatchFrame(MyDialogAddFace):
 
     @top_extend.setter
     def top_extend(self, value):
-        self.target_paint_y += value
-        self.bg_size = (self.bg_size[0], self.bg_size[1] + value)
-        self._top_extend += value
+        self.target_paint_y = value
+        self.bg_size = (self.target_size[0] + self.left_extend + self.right_extend,
+                        self.target_size[1] + value + self.button_extend)
+        self._top_extend = value
 
     @left_extend.setter
     def left_extend(self, value):
-        self.target_paint_x += value
-        self.bg_size = (self.bg_size[0] + value, self.bg_size[1])
-        self._left_extend += value
+        self.target_paint_x = value
+        self.bg_size = (self.target_size[0] + value + self.right_extend, self.target_size[1] +
+                        self.top_extend + self.button_extend)
+        self._left_extend = value
 
     @right_extend.setter
     def right_extend(self, value):
-        self.bg_size = (self.bg_size[0] + value, self.bg_size[1])
-        self._right_extend += value
+        self.bg_size = (self.target_size[0] + value + self.left_extend, self.target_size[1] +
+                        self.top_extend + self.button_extend)
+        self._right_extend = value
 
     @button_extend.setter
     def button_extend(self, value):
-        self.bg_size = (self.bg_size[0], self.bg_size[1] + value)
-        self._button_extend += value
+        self.bg_size = (self.target_size[0] + self.left_extend + self.right_extend,
+                        self.target_size[1] + value + self.top_extend)
+        self._button_extend = value
 
     def callback(self, values, is_all_only):
         self.input_values = values
@@ -201,6 +292,14 @@ class FaceMatchFrame(MyDialogAddFace):
         #            temp.append(pic)
         #    self.face_file_group[key] = temp
 
+    def paste_target_face(self):
+        self.bg_paint = Image.new("RGBA", self.bg_size, (0, 0, 0, 0))
+        self.bg_paint.paste(self.target_img, (self.target_paint_x, self.target_paint_y))
+        if self.is_alpha_paste:
+            FaceMatchFrame.paste_face(self.bg_paint, self.target_face, (self.pos_x, self.pos_y))
+        else:
+            self.bg_paint.paste(self.target_face, (self.pos_x, self.pos_y), 0)
+
     def paint_move(self, target_x, target_y):
 
         pic = self.bg_paint.crop((target_x, target_y, self.main_view_w + target_x, self.main_view_h + target_y))
@@ -210,9 +309,7 @@ class FaceMatchFrame(MyDialogAddFace):
         self.m_bitmap_main_view.SetBitmap(temp)
 
     def add_face(self):
-        self.bg_paint = Image.new("RGBA", self.bg_size, (0, 0, 0, 0))
-        self.bg_paint.paste(self.target_img, (self.target_paint_x, self.target_paint_y))
-        self.bg_paint.paste(self.target_face, (self.pos_x, self.pos_y))
+        self.paste_target_face()
         self.paint_move(self._target_x, self._target_y)
 
     def export_all(self):
@@ -233,8 +330,12 @@ class FaceMatchFrame(MyDialogAddFace):
                 temp = Image.open(value)
                 if temp.size == face_size:
                     pic = Image.new("RGBA", bg_size, 0)
-                    pic.paste(target_img, target_pos)
-                    pic.paste(temp, pos)
+                    pic.paste(target_img, target_pos, 0)
+                    if self.is_alpha_paste:
+                        FaceMatchFrame.paste_face(pic, temp, pos)
+                    else:
+                        pic.paste(temp, pos, 0)
+
                     path = os.path.join(save_path, f"{name}-{key}-{count}.png")
 
                     self.m_staticText_info.SetLabel(f"正在接头：{name}-{key}-{count}")
@@ -249,13 +350,10 @@ class FaceMatchFrame(MyDialogAddFace):
 
         self.m_panel7.Enable(False)
 
-        # self.m_bitmap_main_view.SetSize(*self.target_size)
-        # self.view_work = QuickRestore(self.target, None,
-        #                              size=tuple(self.target_size),
-        #                              bitmap_show=self.m_bitmap_main_view,
-        #                              info_show=self.m_staticText_info)
-        # self.view_work.start()
-        # self.m_scrolledWindow2.Update()
+    def change_method(self, event):
+
+        self.is_alpha_paste = bool(event.GetSelection())
+        self.add_face()
 
     def select_face(self, event):
         index = event.GetSelection()
@@ -375,9 +473,30 @@ class FaceMatchFrame(MyDialogAddFace):
         dialog = wx.SingleChoiceDialog(self, "选择导出类型", "选择导出类型", ("仅导出当前表情组合", "导出全部相同尺寸表情组合"))
         if dialog.ShowModal() == wx.ID_OK:
             select = dialog.GetSelection()
-            if select == 1:
-                dialog = wx.FileDialog(self, f"导出{self.target.cn_name}-{self.select_index}表情组合", "./"
-                                       , f"{self.target.cn_name}-{self.select_index}.png",
+            # 如果使用最小尺寸导出
+            if self.m_checkBox_minosity_size.GetValue():
+                begin_x = min(self.target_paint_x, self.pos_x)
+                begin_y = min(self.target_paint_y, self.pos_y)
+                end_x = max(self.target_paint_x + self.target_size[0], self.pos_x + self.target_face.width)
+                end_y = max(self.target_paint_y + self.target_size[1], self.pos_x, +self.target_face.height)
+
+                face_x_change = self.pos_x - begin_x
+                face_y_change = self.pos_y - begin_y
+                target_x_change = self.target_paint_x - begin_x
+                target_y_change = self.target_paint_y - begin_y
+
+                self.pos_x = face_x_change
+                self.pos_y = face_y_change
+                self.target_paint_x = target_x_change
+                self.target_paint_y = target_y_change
+
+                self.bg_size = (end_x - begin_x, end_y - begin_y)
+
+                self.m_staticText_info.SetLabel(f"尺寸修改为：{self.bg_size}")
+
+            if select == 0:
+                dialog = wx.FileDialog(self, f"导出{self.target.cn_name}-{self.select_index}表情组合", "./",
+                                       f"{self.target.cn_name}-{self.select_index}.png", wildcard="*.png",
                                        style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
                 if dialog.ShowModal() == wx.ID_OK:
                     path = dialog.GetPath()

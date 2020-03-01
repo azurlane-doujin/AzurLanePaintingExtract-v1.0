@@ -8,6 +8,7 @@ from core.src.frame_classes.names_edit_frame import NamesEditFrame
 from core.src.static_classes.image_deal import ImageWork
 from core.src.static_classes.static_data import GlobalData
 from core.src.structs_classes.setting_structs import SettingHolder, PerSetting
+from ..frame_classes.location_update import LocationUpdate
 
 
 class Setting(MyDialogSetting):
@@ -47,12 +48,12 @@ class Setting(MyDialogSetting):
     def set_info(self, event):
         data = self.data
         val: PerSetting = self.setting_hold[data.sk_input_filter]
-        val.set_link = self.m_radioBox_input_filter.SetSelection
-        val.get_link = self.m_radioBox_input_filter.GetSelection
+        val.set_link = self.m_choice_inport_filter.SetSelection
+        val.get_link = self.m_choice_inport_filter.GetSelection
 
         val: PerSetting = self.setting_hold[data.sk_output_group]
-        val.set_link = self.m_radioBox_output_group.SetSelection
-        val.get_link = self.m_radioBox_output_group.GetSelection
+        val.set_link = self.m_choice_export_division.SetSelection
+        val.get_link = self.m_choice_export_division.GetSelection
 
         val: PerSetting = self.setting_hold[data.sk_use_cn_name]
         val.set_link = self.m_checkBox_ex_cn.SetValue
@@ -95,7 +96,36 @@ class Setting(MyDialogSetting):
         self.save_info()
 
     def update_names(self, event):
-        wx.MessageBox("敬请期待", "信息", wx.ICON_INFORMATION)
+        dialog = LocationUpdate(self, self.names, self.path)
+        dialog.ShowModal()
+
+    # answer=wx.MessageBox("即将开始更新，确认？", "信息", wx.ICON_INFORMATION|wx.YES_NO)
+    # if answer==wx.YES:
+    #     try:
+    #         r=requests.get(
+    #             "https://raw.githubusercontent.com/OSSSY152/AzurLanePaintingLocalization/master/chs/names.json",
+    #             timeout=100)
+    #         if r.status_code==200:
+    #             overwrite=0
+    #             new_item=0
+    #             temp_names=self.names
+    #             keys=list(temp_names.keys())
+    #             new=json.loads(r.text)
+    #             temple=new
+    #             for key, item in temple.items():
+    #                 temp_names[key] = item
+    #                 if key in keys:
+    #                     overwrite += 1
+    #                 else:
+    #                     new_item += 1
+
+    #             self.names=temp_names
+    #             with open(os.path.join(self.path, "core\\assets\\names.json"), "w")as file:
+    #                 json.dump(temp_names, file, indent=4)
+
+    #             wx.MessageBox(f"导入键值对文件成功！\n\t覆盖：{overwrite}\n\t新增：{new_item}", "信息")
+    #     except Exception as info:
+    #         wx.MessageBox(f"导入键值对文件出现错误！\n{info.__str__()}")
 
     def edit_names(self, event):
         dialog = NamesEditFrame(self, self.names, self.path)

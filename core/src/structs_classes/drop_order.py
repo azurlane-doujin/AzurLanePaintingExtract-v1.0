@@ -86,3 +86,18 @@ class FaceDragOrder(wx.FileDropTarget):
         self.callback(data, is_all_only)
 
         return True
+
+
+class AtlasDropOrder(wx.FileDropTarget):
+    def __init__(self, parent, callback):
+        self.parent = parent
+        self.callback = callback
+
+        super(AtlasDropOrder, self).__init__()
+
+    def OnDropFiles(self, x, y, filenames):
+        ables = filter(lambda x: x.endswith("atlas") or x.endswith("atlas.txt"), filenames)
+        items = iter(ables)
+
+        self.callback(next(items))
+        return True

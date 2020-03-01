@@ -24,7 +24,7 @@ class PerInfo(BasicInfo):
         # 目标文件位置
         self.lay_in = ""
         # 是否可以使用还原
-        self.is_able_work = False
+        self._is_able_work = False
         # 导出目标位置
         self._save_path: str = ""
         # 中文名称
@@ -32,6 +32,8 @@ class PerInfo(BasicInfo):
         self.has_cn = has_cn
         # 父组件
         self.parent = None
+
+        self.must_able = False
 
         # tree ID
         self.key = ...
@@ -43,7 +45,9 @@ class PerInfo(BasicInfo):
 
         self.action_group = [
             "independent",
-            "face_match"
+            "face_match",
+            "atlas_split",
+            "set_able",
         ]
         # 是否以中文保存
         self._is_save_as_cn = True
@@ -55,13 +59,20 @@ class PerInfo(BasicInfo):
             return False
 
     @property
+    def is_able_work(self):
+        if self.must_able:
+            return True
+        else:
+            return self._is_able_work
+
+    @property
     def tex_path(self):
         return self._tex_path
 
     @tex_path.setter
     def tex_path(self, value):
         self._tex_path = value
-        self.is_able_work = self.is_able()
+        self._is_able_work = self.is_able()
 
     @property
     def mesh_path(self):
@@ -70,7 +81,7 @@ class PerInfo(BasicInfo):
     @mesh_path.setter
     def mesh_path(self, value):
         self._mesh_path = value
-        self.is_able_work = self.is_able()
+        self._is_able_work = self.is_able()
 
     @property
     def save_path(self):
@@ -97,11 +108,19 @@ class PerInfo(BasicInfo):
     def is_def(val):
         return bool(val)
 
+    def get_is_able_work(self):
+        return self._is_able_work
+
     def is_able(self):
         if os.path.isfile(self.tex_path) and os.path.isfile(self.mesh_path):
             return True
         else:
             return False
+
+    def transform_able(self):
+        self.must_able =not self.must_able
+    def set_single_path(self,path):
+        self._save_path=path
 
     def append_to_tree(self, tree: wx.TreeCtrl, tree_root: wx.TreeItemId):
         """
@@ -139,6 +158,13 @@ class PerInfo(BasicInfo):
 
         face_match = self.action_group[self.data.at_face_match] = tree.AppendItem(self.tree_ID, "为当前立绘添加附加表情")
         tree.SetItemTextColour(face_match, wx.Colour(255, 0, 166))
+
+        atlas_spilt = self.action_group[self.data.at_atlas_split] = tree.AppendItem(self.tree_ID, "进行Q版小人切割")
+        tree.SetItemTextColour(atlas_spilt, wx.Colour(255, 0, 166))
+
+        set_able = self.action_group[self.data.at_set_able] = tree.AppendItem(self.tree_ID,
+                                                                              f"强制转换为可还原状态【当前{self.must_able}】")
+        tree.SetItemTextColour(set_able, wx.Colour(255, 0, 166))
 
     def get_select(self, type_is: bool):
         """
@@ -365,12 +391,12 @@ class PerWorkList(BasicInfoList):
 
     # 生成部分
     def build_able(self):
-        val = filter(lambda x: x.is_able_work, self)
+        val = filter(lambda x: x.get_is_able_work(), self)
         value = PerWorkList(val)
         return value
 
     def build_unable(self):
-        val = filterfalse(lambda x: x.is_able_work, self)
+        val = filterfalse(lambda x: x.get_is_able_work(), self)
         value = PerWorkList(val)
         return value
 

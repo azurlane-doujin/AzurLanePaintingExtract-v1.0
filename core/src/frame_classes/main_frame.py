@@ -6,10 +6,12 @@ import time
 
 import wx
 
+from core.src.frame_classes.atlas_spilt_frame import AtlasSpiltFrame
 from core.src.frame_classes.design_frame import MainFrame as Mf
 from core.src.frame_classes.face_match_frame import FaceMatchFrame
 from core.src.frame_classes.setting_frame import Setting
 from core.src.static_classes.file_read import FileFilter
+from core.src.static_classes.image_deal import ImageWork
 from core.src.static_classes.search_order import SearchOrder
 from core.src.static_classes.static_data import GlobalData
 from core.src.structs_classes.drop_order import DragOrder
@@ -26,7 +28,7 @@ class MainFrame(Mf):
     def __init__(self, parent, path=os.getcwd()):
         super(MainFrame, self).__init__(parent)
         # 添加图标
-        icon = wx.Icon(os.path.join(path, "core\\assets\\Tools.ico"))
+        icon = wx.Icon(os.path.join(path, "core\\assets\\sf_icon.ico"))
         self.SetIcon(icon)
         # 舰娘名称文件
         self.names = {}
@@ -146,8 +148,21 @@ class MainFrame(Mf):
             self.m_staticText_info.SetLabel("换头失败！必须是可还原对象")
             return
         self.m_staticText_info.SetLabel("开始换头！")
-        self.__dialog=FaceMatchFrame(self,target)
+        self.__dialog = FaceMatchFrame(self, target)
         self.__dialog.ShowModal()
+
+    def atlas_split_target(self, target):
+        if not os.path.isfile(target.tex_path):
+            self.m_staticText_info.SetLabel("切割失败，必须有一个可用Texture2D文件")
+            return
+        else:
+            self.m_staticText_info.SetLabel("开始换头！")
+            self.__dialog = AtlasSpiltFrame(self, target)
+            self.__dialog.ShowModal()
+
+    def set_able_target(self, target):
+        target.transform_able()
+        self.m_staticText_info.SetLabel(f"{target.cn_name}已转换,现在为{target.must_able}")
 
     # 以下为原有函数
     def restart(self):
@@ -166,15 +181,20 @@ class MainFrame(Mf):
     # export
     def export_choice(self):
         """
-        (不运行)导出选择项
+        导出选择项
         :return: none
         """
-        self.__dialog = wx.DirDialog(self, "保存", os.getcwd(), style=wx.DD_NEW_DIR_BUTTON)
+        target = self.name
+        self.__dialog = wx.FileDialog(self, "保存", os.getcwd(), f'{target.cn_name}.png', "*.png",
+                                      wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT | wx.FD_PREVIEW)
 
         if self.__dialog.ShowModal() == wx.ID_OK:
             self.m_gauge_state.SetValue(0)
             self.save_path = self.__dialog.GetPath()
             self.restart()
+
+            target.set_single_path(self.__dialog.GetPath())
+            ImageWork.restore_tool(target)
 
         self.m_gauge_state.SetValue(100)
 
@@ -330,6 +350,10 @@ class MainFrame(Mf):
                             self.independent_target(target)
                         if type_is == self.data.at_face_match:
                             self.face_match_target(target)
+                        if type_is == self.data.at_atlas_split:
+                            self.atlas_split_target(target)
+                        if type_is == self.data.at_set_able:
+                            self.set_able_target(target)
 
     def choice_file(self, event):
         # 选择对应文件
