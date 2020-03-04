@@ -9,7 +9,7 @@ from ..structs_classes.location_group import LocationList
 
 
 class LocationUpdate(MyDialogUpdateLocation):
-    def __init__(self, parent, names, path):
+    def __init__(self, parent, names, path, local_data):
         super(LocationUpdate, self).__init__(parent)
         self.path = path
         self.names = names
@@ -19,8 +19,13 @@ class LocationUpdate(MyDialogUpdateLocation):
 
         self.local_work = LocationList()
 
-        self.available_list = (
-            "https://raw.githubusercontent.com/OSSSY152/AzurLanePaintingLocalization/master/chs/names.json",)
+        self.available_list = local_data
+        self.exist_size = 0
+
+    def MyDialogUpdateLocationOnInitDialog(self, event):
+        names = [a for a in self.available_list.keys()]
+        self.m_listBox_select.Set(names)
+        self.exist_size = len(names)
 
     def compare(self):
         self.local_work = LocationList()
@@ -39,7 +44,7 @@ class LocationUpdate(MyDialogUpdateLocation):
         self.Destroy()
 
     def request_info(self, event):
-        index = event.GetSelection()
+        index = event.GetString()
 
         def work():
             try:
@@ -70,6 +75,37 @@ class LocationUpdate(MyDialogUpdateLocation):
 
             self.compare()
 
+    def add_local(self, event):
+        is_new_name = False
+        canceled = False
+        name = ''
+        while not is_new_name:
+            dialog = wx.TextEntryDialog(parent=self, message="新增本地化资源标签（不能与已有的本地化资源标签同名）", caption="添加标签",
+                                        value=f"本地化资源-{self.exist_size + 1}")
+            if dialog.ShowModal() == wx.ID_OK:
+                name = dialog.GetValue()
+                if name not in self.available_list.keys():
+                    is_new_name = True
+                else:
+                    wx.MessageBox("该标签已经存在！", "错误", wx.ICON_ERROR)
+            else:
+                canceled = True
+                break
+        if canceled:
+            return
+        dialog_url = wx.TextEntryDialog(parent=self, message="新增本地化资源地址", caption="添加地址", value='')
+        if dialog_url.ShowModal() == wx.ID_OK:
+            url = dialog_url.GetValue()
+            self.available_list[name] = url
+            self.m_listBox_select.Append(name)
+            self.exist_size += 1
+
+    def remove_data(self, event):
+        key = self.m_listBox_select.GetStringSelection()
+        del self.available_list[key]
+        self.m_listBox_select.Clear()
+        self.MyDialogUpdateLocationOnInitDialog(event)
+
     def apply_all(self, event):
         data = self.local_work.transform_all()
         self.update(data)
@@ -84,3 +120,6 @@ class LocationUpdate(MyDialogUpdateLocation):
 
     def cancel(self, event):
         self.Destroy()
+
+    def get_local_data(self):
+        return self.available_list

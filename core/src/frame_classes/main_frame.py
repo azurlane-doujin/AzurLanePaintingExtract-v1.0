@@ -162,7 +162,17 @@ class MainFrame(Mf):
 
     def set_able_target(self, target):
         target.transform_able()
+        self.m_treeCtrl_info.DeleteChildren(target.tree_ID)
+        target.append_item_tree(self.m_treeCtrl_info)
         self.m_staticText_info.SetLabel(f"{target.cn_name}已转换,现在为{target.must_able}")
+
+    def remove_target(self, target):
+        info = wx.MessageBox(f"确实要移除\n{target}\n?", '信息', wx.YES_NO | wx.ICON_INFORMATION)
+        if info == wx.YES:
+            self.m_treeCtrl_info.Delete(target.tree_ID)
+            self.painting_work.remove([target])
+            if self.search_type or self.filter_type:
+                self.select_data.remove([target])
 
     # 以下为原有函数
     def restart(self):
@@ -354,6 +364,8 @@ class MainFrame(Mf):
                             self.atlas_split_target(target)
                         if type_is == self.data.at_set_able:
                             self.set_able_target(target)
+                        if type_is == self.data.at_remove_item:
+                            self.remove_target(target)
 
     def choice_file(self, event):
         # 选择对应文件

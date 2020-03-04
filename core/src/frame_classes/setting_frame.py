@@ -43,7 +43,7 @@ class Setting(MyDialogSetting):
         self.setting[data.sk_input_filter_mesh] = self.input_filter_mesh[self.setting[data.sk_input_filter]]
 
         with open(os.path.join(os.getcwd(), "core\\assets\\setting.json"), 'w')as file:
-            json.dump(self.setting, file)
+            json.dump(self.setting, file, indent=4)
 
     def set_info(self, event):
         data = self.data
@@ -96,8 +96,10 @@ class Setting(MyDialogSetting):
         self.save_info()
 
     def update_names(self, event):
-        dialog = LocationUpdate(self, self.names, self.path)
+        dialog = LocationUpdate(self, self.names, self.path, self.setting[self.data.sk_local_data])
         dialog.ShowModal()
+
+        self.setting[self.data.sk_local_data] = dialog.get_local_data()
 
     # answer=wx.MessageBox("即将开始更新，确认？", "信息", wx.ICON_INFORMATION|wx.YES_NO)
     # if answer==wx.YES:

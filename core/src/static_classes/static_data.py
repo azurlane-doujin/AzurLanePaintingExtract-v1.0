@@ -36,12 +36,18 @@ class GlobalData:
     @property
     def at_face_match(self):
         return 1
+
     @property
     def at_atlas_split(self):
         return 2
+
     @property
     def at_set_able(self):
         return 3
+
+    @property
+    def at_remove_item(self):
+        return 4
 
     # tree_filter
     @property
@@ -225,3 +231,6 @@ class GlobalData:
     @property
     def sk_export_all_while_copy(self):
         return "export_copy"
+    @property
+    def sk_local_data(self):
+        return "local_data"

@@ -133,8 +133,6 @@ class MainFrame ( wx.Frame ):
 		self.m_button_work.Bind( wx.EVT_BUTTON, self.work )
 		self.m_button_change.Bind( wx.EVT_BUTTON, self.choice_file )
 		self.m_button_setting.Bind( wx.EVT_BUTTON, self.setting )
-		self.m_scrolledWindow2.Bind( wx.EVT_KEY_DOWN, self.on_key_dwon )
-		self.m_scrolledWindow2.Bind( wx.EVT_KEY_UP, self.on_key_dwon )
 
 	def __del__( self ):
 		pass
@@ -168,10 +166,6 @@ class MainFrame ( wx.Frame ):
 
 	def setting( self, event ):
 		event.Skip()
-
-	def on_key_dwon( self, event ):
-		event.Skip()
-
 
 
 ###########################################################################
@@ -256,7 +250,6 @@ class MyDialogAtlasSpilt ( wx.Dialog ):
 		self.Centre( wx.BOTH )
 
 		# Connect Events
-		self.Bind( wx.EVT_KEY_DOWN, self.on_key_down )
 		self.m_filePicker_target_atlas.Bind( wx.EVT_FILEPICKER_CHANGED, self.load_atlas )
 		self.m_listBox_spilt_items.Bind( wx.EVT_LISTBOX, self.view_item )
 		self.m_listBox_spilt_items.Bind( wx.EVT_LISTBOX_DCLICK, self.save_item )
@@ -268,9 +261,6 @@ class MyDialogAtlasSpilt ( wx.Dialog ):
 
 
 	# Virtual event handlers, overide them in your derived class
-	def on_key_down( self, event ):
-		event.Skip()
-
 	def load_atlas( self, event ):
 		event.Skip()
 
@@ -835,14 +825,29 @@ class MyDialogUpdateLocation ( wx.Dialog ):
 
 		bSizer26 = wx.BoxSizer( wx.VERTICAL )
 
-		self.m_staticText11 = wx.StaticText( self, wx.ID_ANY, u"可选的本地化", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer35 = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_staticText11 = wx.StaticText( self, wx.ID_ANY, u"本地化", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText11.Wrap( -1 )
 
-		bSizer26.Add( self.m_staticText11, 0, wx.ALL|wx.EXPAND, 5 )
+		bSizer35.Add( self.m_staticText11, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+
+		self.m_bpButton_remove = wx.BitmapButton( self, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, wx.BU_AUTODRAW|0 )
+
+		self.m_bpButton_remove.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_MINUS, wx.ART_BUTTON ) )
+		bSizer35.Add( self.m_bpButton_remove, 0, wx.ALL, 5 )
+
+		self.m_bpButton_add = wx.BitmapButton( self, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, wx.BU_AUTODRAW|0 )
+
+		self.m_bpButton_add.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_PLUS, wx.ART_BUTTON ) )
+		bSizer35.Add( self.m_bpButton_add, 0, wx.ALL, 5 )
+
+
+		bSizer26.Add( bSizer35, 0, wx.EXPAND, 5 )
 
 		m_listBox_selectChoices = [ u"OSSSY152" ]
-		self.m_listBox_select = wx.ListBox( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, m_listBox_selectChoices, 0 )
-		bSizer26.Add( self.m_listBox_select, 1, wx.ALL, 5 )
+		self.m_listBox_select = wx.ListBox( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, m_listBox_selectChoices, wx.LB_NEEDED_SB )
+		bSizer26.Add( self.m_listBox_select, 1, wx.ALL|wx.EXPAND, 5 )
 
 		self.m_staticline25 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
 		bSizer26.Add( self.m_staticline25, 0, wx.EXPAND |wx.ALL, 5 )
@@ -902,6 +907,9 @@ class MyDialogUpdateLocation ( wx.Dialog ):
 		self.Centre( wx.BOTH )
 
 		# Connect Events
+		self.Bind( wx.EVT_INIT_DIALOG, self.MyDialogUpdateLocationOnInitDialog )
+		self.m_bpButton_remove.Bind( wx.EVT_BUTTON, self.remove_data )
+		self.m_bpButton_add.Bind( wx.EVT_BUTTON, self.add_local )
 		self.m_listBox_select.Bind( wx.EVT_LISTBOX_DCLICK, self.request_info )
 		self.m_button_load_file.Bind( wx.EVT_BUTTON, self.load_file )
 		self.m_button_apply_all.Bind( wx.EVT_BUTTON, self.apply_all )
@@ -914,6 +922,15 @@ class MyDialogUpdateLocation ( wx.Dialog ):
 
 
 	# Virtual event handlers, overide them in your derived class
+	def MyDialogUpdateLocationOnInitDialog( self, event ):
+		event.Skip()
+
+	def remove_data( self, event ):
+		event.Skip()
+
+	def add_local( self, event ):
+		event.Skip()
+
 	def request_info( self, event ):
 		event.Skip()
 

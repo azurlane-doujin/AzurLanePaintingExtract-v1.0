@@ -48,6 +48,7 @@ class PerInfo(BasicInfo):
             "face_match",
             "atlas_split",
             "set_able",
+            "remove_item",
         ]
         # 是否以中文保存
         self._is_save_as_cn = True
@@ -118,21 +119,12 @@ class PerInfo(BasicInfo):
             return False
 
     def transform_able(self):
-        self.must_able =not self.must_able
-    def set_single_path(self,path):
-        self._save_path=path
+        self.must_able = not self.must_able
 
-    def append_to_tree(self, tree: wx.TreeCtrl, tree_root: wx.TreeItemId):
-        """
-        添加到树，构建tree列表
-        :param tree: tree 对象
-        :param tree_root: 根id
-        :return:
-        """
-        self.more_mesh_per_id.clear()
-        self.more_tex_per_id.clear()
+    def set_single_path(self, path):
+        self._save_path = path
 
-        self.tree_ID = tree.AppendItem(tree_root, self.cn_name)
+    def append_item_tree(self, tree: wx.TreeCtrl):
         # 名称
         self.key = key = tree.AppendItem(self.tree_ID, f"名称：{self.cn_name}")
         if self.is_able_work:
@@ -152,19 +144,37 @@ class PerInfo(BasicInfo):
         for each_path in self.more_mesh:
             val = tree.AppendItem(more_mesh_id, each_path)
             self.more_mesh_per_id.append(val)
+
+        action_root = tree.AppendItem(self.tree_ID, "功能按键")
         # 功能键
-        independent = self.action_group[self.data.at_independent] = tree.AppendItem(self.tree_ID, "将当前的组合独立")
+        independent = self.action_group[self.data.at_independent] = tree.AppendItem(action_root, "将当前的组合独立")
         tree.SetItemTextColour(independent, wx.Colour(255, 0, 166))
 
-        face_match = self.action_group[self.data.at_face_match] = tree.AppendItem(self.tree_ID, "为当前立绘添加附加表情")
-        tree.SetItemTextColour(face_match, wx.Colour(255, 0, 166))
+        face_match = self.action_group[self.data.at_face_match] = tree.AppendItem(action_root, "为当前立绘添加附加表情")
+        tree.SetItemTextColour(face_match, wx.Colour(0, 16, 166))
 
-        atlas_spilt = self.action_group[self.data.at_atlas_split] = tree.AppendItem(self.tree_ID, "进行Q版小人切割")
-        tree.SetItemTextColour(atlas_spilt, wx.Colour(255, 0, 166))
+        atlas_spilt = self.action_group[self.data.at_atlas_split] = tree.AppendItem(action_root, "进行Q版小人切割")
+        tree.SetItemTextColour(atlas_spilt, wx.Colour(140, 0, 166))
 
-        set_able = self.action_group[self.data.at_set_able] = tree.AppendItem(self.tree_ID,
+        set_able = self.action_group[self.data.at_set_able] = tree.AppendItem(action_root,
                                                                               f"强制转换为可还原状态【当前{self.must_able}】")
-        tree.SetItemTextColour(set_able, wx.Colour(255, 0, 166))
+        tree.SetItemTextColour(set_able, wx.Colour(255, 177, 166))
+
+        remove_item = self.action_group[self.data.at_remove_item] = tree.AppendItem(action_root, "删除该元素 ")
+        tree.SetItemTextColour(remove_item, wx.Colour(248, 0, 255))
+
+    def append_to_tree(self, tree: wx.TreeCtrl, tree_root: wx.TreeItemId):
+        """
+        添加到树，构建tree列表
+        :param tree: tree 对象
+        :param tree_root: 根id
+        :return:
+        """
+        self.more_mesh_per_id.clear()
+        self.more_tex_per_id.clear()
+
+        self.tree_ID = tree.AppendItem(tree_root, self.cn_name)
+        self.append_item_tree(tree)
 
     def get_select(self, type_is: bool):
         """
