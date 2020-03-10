@@ -49,6 +49,10 @@ class GlobalData:
     def at_remove_item(self):
         return 4
 
+    @property
+    def at_split_only(self):
+        return 5
+
     # tree_filter
     @property
     def tf_all(self):
@@ -231,6 +235,7 @@ class GlobalData:
     @property
     def sk_export_all_while_copy(self):
         return "export_copy"
+
     @property
     def sk_local_data(self):
         return "local_data"

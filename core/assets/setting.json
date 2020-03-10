@@ -9,7 +9,7 @@
     "input_filter_mesh": "^.+-mesh\\.[Oo][Bb][Jj]$",
     "input_filter_tex": "^.+\\.[Pp][Nn][Gg]$",
     "input_filter": 0,
-    "output_group": 0,
+    "output_group": 1,
     "local_data": {
         "OSSSY152": "https://raw.githubusercontent.com/OSSSY152/AzurLanePaintingLocalization/master/chs/names.json"
     }

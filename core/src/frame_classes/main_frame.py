@@ -174,6 +174,19 @@ class MainFrame(Mf):
             if self.search_type or self.filter_type:
                 self.select_data.remove([target])
 
+    def split_target_only(self, target):
+        if not target.is_able_work:
+            self.m_staticText_info.SetLabel(f"{target}无法切割，为非可还原对象")
+            return
+        self.__dialog = wx.DirDialog(self, "选择保存文件夹", self.work_path, wx.DD_NEW_DIR_BUTTON | wx.DD_DIR_MUST_EXIST)
+        if wx.ID_OK == self.__dialog.ShowModal():
+            path = self.__dialog.GetPath()
+            if self.setting_info[self.data.sk_make_new_dir]:
+                path = os.path.join(path, "碧蓝航线-导出")
+                os.makedirs(path, exist_ok=True)
+                ImageWork.split_only_one(target, path)
+                self.m_staticText_info.SetLabel(f"{target.cn_name}切割已完成，保存于{path}")
+
     # 以下为原有函数
     def restart(self):
         """
@@ -366,6 +379,8 @@ class MainFrame(Mf):
                             self.set_able_target(target)
                         if type_is == self.data.at_remove_item:
                             self.remove_target(target)
+                        if type_is == self.data.at_split_only:
+                            self.split_target_only(target)
 
     def choice_file(self, event):
         # 选择对应文件

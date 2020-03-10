@@ -82,6 +82,8 @@ class RestoreThread(threading.Thread):
                         if val is not None:
                             val = val.group(1)
                             if now_info.has_cn and self.setting[data.sk_use_cn_name]:
+                                if val.lower().startswith("hdn"):
+                                    val+='_1'
                                 value = self.names[val]
                                 if value != "":
                                     val = value
@@ -110,8 +112,9 @@ class RestoreThread(threading.Thread):
                     val = round(100 * (self.index / len(self.able)))
                     self.format.m_gauge_state.SetValue(val)
                     self.index += 1
-            except Exception as info:
+            except KeyError as info:
                 self.format.m_staticText_info.SetLabel(f"处理出错！，为{info}")
+                raise
         if self.stop:
             return
         if self.setting[data.sk_export_all_while_copy]:

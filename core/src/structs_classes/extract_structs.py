@@ -48,6 +48,7 @@ class PerInfo(BasicInfo):
             "face_match",
             "atlas_split",
             "set_able",
+            "split_only",
             "remove_item",
         ]
         # 是否以中文保存
@@ -159,6 +160,9 @@ class PerInfo(BasicInfo):
         set_able = self.action_group[self.data.at_set_able] = tree.AppendItem(action_root,
                                                                               f"强制转换为可还原状态【当前{self.must_able}】")
         tree.SetItemTextColour(set_able, wx.Colour(255, 177, 166))
+
+        split_only = self.action_group[self.data.at_split_only] = tree.AppendItem(action_root, "仅进行立绘还原切割 ")
+        tree.SetItemTextColour(split_only, wx.Colour(248, 66, 255))
 
         remove_item = self.action_group[self.data.at_remove_item] = tree.AppendItem(action_root, "删除该元素 ")
         tree.SetItemTextColour(remove_item, wx.Colour(248, 0, 255))
