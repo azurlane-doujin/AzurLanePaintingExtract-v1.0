@@ -6,10 +6,18 @@ from functools import reduce
 import PIL.Image
 from re import match, split
 
+import wx
+
 from core.src.structs_classes.extract_structs import PerInfo
 
 
 class ImageWork(object):
+    @staticmethod
+    def show_in_bitmap_contain(img, bitmap):
+        temp = wx.Bitmap.FromBufferRGBA(img.width, img.height, img.tobytes())
+        bitmap.ClearBackground()
+        bitmap.SetBitmap(temp)
+
     @staticmethod
     def cut_pic_builder(size):
         """
@@ -243,3 +251,101 @@ class ImageWork(object):
             values[var] = val
 
         return values
+
+    group_type = 0
+    data_type = 1
+
+    @staticmethod
+    def match_code(tab_count: int, key: str, target_string, type_is=group_type):
+        tabs = ''
+        count = 0
+        while count < int(tab_count):
+            tabs += r'\s'
+            count += 1
+        if type_is == ImageWork.group_type:
+            pattern = re.compile(f"{tabs}(?:\\d\\s)?{key}\\n(?:{tabs}\\s.+\\n)+")
+        elif type_is == ImageWork.data_type:
+            pattern = re.compile(f"{tabs}(?:\\d\\s)?{key} = (.+)\\n")
+        else:
+            pattern = re.compile(r'.+')
+        group = pattern.findall(target_string)
+        if group:
+            return group[0]
+        else:
+            return ''
+
+    @staticmethod
+    def dump_work_json(file, use_id, id_num, pic):
+        with open(file, "r")as f:
+            f_info = json.load(f)
+
+        render_data = f_info["0 Sprite Base"]["1 SpriteRenderData m_RD"]
+        if use_id:
+            path_id = render_data["0 PPtr<Texture2D> texture"]["0 SInt64 m_PathID"]
+            if str(path_id) != id_num:
+                return False, None
+        try:
+            offset = render_data["0 Rectf textureRect"]
+            x_pos = round(float(offset['0 float x']))
+            y_pos = round(float(offset['0 float y']))
+            width = round(float(offset['0 float width']))
+            height = round(float(offset['0 float height']))
+
+            y_pos = pic.height - y_pos - height
+            box = [x_pos, y_pos, width + x_pos, height + y_pos]
+            data = pic.crop(box)
+        except Exception as err_info:
+            wx.MessageBox(f"处理\n【{file}】\n时出错\n({err_info})", "错误", wx.ICON_ERROR)
+            return False, None
+        else:
+            return True, data
+
+    @staticmethod
+    def dump_work_text(file, use_id, id_num, pic):
+        with open(file, "r")as f:
+            f_info = f.read()
+        base = ImageWork.match_code(0, 'Sprite Base', f_info)
+        render_data = ImageWork.match_code(1, 'SpriteRenderData m_RD', base)
+        if use_id:
+            texture = ImageWork.match_code(2, 'PPtr<Texture2D> texture', render_data)
+            path_id = ImageWork.match_code(3, 'SInt64 m_PathID', texture, ImageWork.data_type)
+            if path_id != id_num:
+                return False, None
+        try:
+            offset = ImageWork.match_code(2, "Rectf textureRect", render_data)
+            x_pos = round(float(ImageWork.match_code(3, 'float x', offset, ImageWork.data_type)))
+            y_pos = round(float(ImageWork.match_code(3, 'float y', offset, ImageWork.data_type)))
+            width = round(float(ImageWork.match_code(3, 'float width', offset, ImageWork.data_type)))
+            height = round(float(ImageWork.match_code(3, 'float height', offset, ImageWork.data_type)))
+            y_pos = pic.height - y_pos - height
+            box = [x_pos, y_pos, width + x_pos, height + y_pos]
+            data = pic.crop(box)
+        except Exception as err_info:
+            wx.MessageBox(f"处理\n【{file}】\n时出错\n({err_info})", "错误", wx.ICON_ERROR)
+            return False, None
+        else:
+            return True, data
+
+    @staticmethod
+    def spilt_sprite(target, files, id_num, dump_file):
+        """Sprite切割"""
+        if id_num == '':
+            use_id = False
+        else:
+            use_id = True
+        pic = PIL.Image.open(target.tex_path)
+        info = {}
+        match = 0
+        if dump_file == 0:
+            func = ImageWork.dump_work_text
+        else:
+            func = ImageWork.dump_work_json
+        for file in files:
+            name = os.path.splitext(os.path.basename(file))[0]
+            #
+            is_able, data = func(file, use_id, id_num, pic)
+            if is_able:
+                info[name] = data
+                match += 1
+
+        return info, match

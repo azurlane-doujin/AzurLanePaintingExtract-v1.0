@@ -101,3 +101,21 @@ class AtlasDropOrder(wx.FileDropTarget):
 
         self.callback(next(items))
         return True
+
+
+class SpriteDropOrder(wx.FileDropTarget):
+    def __init__(self, callback):
+        super(SpriteDropOrder, self).__init__()
+        self.files = []
+        self.callback = callback
+
+
+    def OnDropFiles(self, x, y, filenames):
+        file_names = list(filenames)
+        dir_name = (filter(lambda temple_value: not os.path.isfile(temple_value), file_names))
+        dir_name = map(lambda temple_value: FileFilter.all_file(temple_value), dir_name)
+        list(map(lambda temple_value: file_names.extend(temple_value), dir_name))
+        file_names = (filter(lambda temple_value: os.path.isfile(temple_value), file_names))
+
+        return self.callback(file_names)
+

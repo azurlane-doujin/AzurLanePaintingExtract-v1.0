@@ -6,6 +6,7 @@ import time
 
 import wx
 
+from core.src.frame_classes.SpriteSpiltFrame import SpriteSplitFrame
 from core.src.frame_classes.atlas_spilt_frame import AtlasSpiltFrame
 from core.src.frame_classes.design_frame import MainFrame as Mf
 from core.src.frame_classes.face_match_frame import FaceMatchFrame
@@ -186,6 +187,14 @@ class MainFrame(Mf):
                 os.makedirs(path, exist_ok=True)
                 ImageWork.split_only_one(target, path)
                 self.m_staticText_info.SetLabel(f"{target.cn_name}切割已完成，保存于{path}")
+
+    def sprite_split(self, target):
+        if not os.path.isfile(target.tex_path):
+            self.m_staticText_info.SetLabel(f"{target}无法切割，至少需要一个Texture2D")
+            return
+        self.m_staticText_info.SetLabel("开始Sprite切割！")
+        self.__dialog = SpriteSplitFrame(self, target)
+        self.__dialog.ShowModal()
 
     # 以下为原有函数
     def restart(self):
@@ -381,6 +390,8 @@ class MainFrame(Mf):
                             self.remove_target(target)
                         if type_is == self.data.at_split_only:
                             self.split_target_only(target)
+                        if type_is==self.data.at_sprite_split:
+                            self.sprite_split(target)
 
     def choice_file(self, event):
         # 选择对应文件

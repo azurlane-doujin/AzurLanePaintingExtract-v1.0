@@ -50,6 +50,7 @@ class PerInfo(BasicInfo):
             "set_able",
             "split_only",
             "remove_item",
+            "sprite_spilt"
         ]
         # 是否以中文保存
         self._is_save_as_cn = True
@@ -156,6 +157,9 @@ class PerInfo(BasicInfo):
 
         atlas_spilt = self.action_group[self.data.at_atlas_split] = tree.AppendItem(action_root, "进行Q版小人切割")
         tree.SetItemTextColour(atlas_spilt, wx.Colour(140, 0, 166))
+
+        sprite_spilt = self.action_group[self.data.at_sprite_split] = tree.AppendItem(action_root, "进行Sprite切割 ")
+        tree.SetItemTextColour(sprite_spilt, wx.Colour(248, 40, 255))
 
         set_able = self.action_group[self.data.at_set_able] = tree.AppendItem(action_root,
                                                                               f"强制转换为可还原状态【当前{self.must_able}】")

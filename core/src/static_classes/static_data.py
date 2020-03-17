@@ -52,6 +52,9 @@ class GlobalData:
     @property
     def at_split_only(self):
         return 5
+    @property
+    def at_sprite_split(self):
+        return 6
 
     # tree_filter
     @property
