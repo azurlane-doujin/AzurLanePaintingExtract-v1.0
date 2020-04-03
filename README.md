@@ -40,3 +40,8 @@
 * [【碧蓝航线】如何手动挖出舰娘的立绘](https://www.bilibili.com/read/cv1330829)
 * [ 如何挖出碧蓝航线的立绘教程（简单版）](https://www.bilibili.com/read/cv894737)
 * [ 如何手动挖出碧蓝航线的立绘](https://www.bilibili.com/read/cv565639)
+---------------------
+#### Bigfun页面
+[正在更新中](https://www.bigfun.cn/post/219941)
+---------------------
+![image](https://i0.hdslb.com/bfs/bigfun/69c19a99f508849b846931cedd339d8034a9e18a.png@760w_1o_1g)
