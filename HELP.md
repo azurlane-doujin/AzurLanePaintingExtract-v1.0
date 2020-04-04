@@ -16,6 +16,7 @@
 * 工具本体：[碧蓝航线立绘辅助处理工具(AzurLanePaintingTool)](https://github.com/azurlane-doujin/AzurLanePaintingExtract-v1.0)
 
 ### 工具下载
+
 ![image](https://i0.hdslb.com/bfs/bigfun/febdbde6ba1a03d918fc28e43452da9f33d42fc0.png@760w_1o_1g)
 
 <font color = ff000>下载对应工具请到release页面下载（图中箭头指向），不要使用“clone or download”这个是下载源代码的。</font>
@@ -48,7 +49,9 @@ Assets Studio[下载界面](https://ci.appveyor.com/project/Perfare/assetstudio/
 1. 在手机资源管理器找到以下路径”/storage/emulated/0/Android/data/com.biliblili.azurlane/files/AssetBundles“,可以将该文件夹整个或部分打包，通过如QQ我的设备等方式发送到电脑备用。
 
 #### 资源分布
+
 ---
+
 * activity_painting 活动立绘
 * activitybanner 活动横幅
 * aircrafticon 飞机图标
@@ -128,7 +131,8 @@ Assets Studio[下载界面](https://ci.appveyor.com/project/Perfare/assetstudio/
 
 ![image](https://i0.hdslb.com/bfs/bigfun/902cc4c7245d984a7e584008d5d114ff1f1c7f42.png@760w_1o_1g)
 
-#####【导入】
+##### 【导入】
+
 * 使用“file”->"load file"(加载文件)/"load folder"（加载文件夹）进行文件加载；导入painting中文件可能会发现，文件夹中有同一舰娘立绘的2个文件（图中以塔什干原始皮肤为例）
 
 ![inage](https://i0.hdslb.com/bfs/bigfun/41ac888697026754cc8fe9b5820b31e305480600.png@760w_1o_1g)
@@ -142,13 +146,16 @@ Assets Studio[下载界面](https://ci.appveyor.com/project/Perfare/assetstudio/
 
 ![image](https://i0.hdslb.com/bfs/bigfun/6ad4039d7b83ca641610a317cbb945e9d9f4b604.png@760w_1o_1g)
 
-#####【导出】
+##### 【导出】
+
 * 点击“Export”->"Select assets"，选择导出文件夹后，等待导出完成，在未改变默认设置，导出完成后会自动打开导出目标文件夹，如图
 
 ![image](https://i0.hdslb.com/bfs/bigfun/b69228fd15ebdde1d273a59b9c630e26c6bb9d29.png@760w_1o_1g)
 
 > 导出目录中出现了2个文件夹，Texture2D中为贴图（.png）；Mesh中为切割信息文件（.obj）。资源准备完成！
+
 ----
+
 ### 工具介绍
 
 > <font color=ff234d>如果想直接上手使用，可跳过该部分</font>
@@ -178,8 +185,8 @@ Assets Studio[下载界面](https://ci.appveyor.com/project/Perfare/assetstudio/
 | ⑤ |“设置”按键。进入设置界面 |
 
 >为了显示完整功能，我先将素材导入
- | | 
-![image](https://i0.hdslb.com/bfs/bigfun/8e1df4b50404e924183318abbb8eb46061a48be4.png@760w_1o_1g) |
+ 
+![image](https://i0.hdslb.com/bfs/bigfun/8e1df4b50404e924183318abbb8eb46061a48be4.png@760w_1o_1g) 
 
 * 如图，导入完成。
 
