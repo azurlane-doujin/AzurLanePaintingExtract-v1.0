@@ -29,6 +29,8 @@ class MainFrame(Mf):
 
     def __init__(self, parent, path=os.getcwd()):
         super(MainFrame, self).__init__(parent)
+        # 常参储存类
+        self.data = GlobalData()
         # 添加图标
         icon = wx.Icon(os.path.join(path, "core\\assets\\sf_icon.ico"))
         self.SetIcon(icon)
@@ -44,7 +46,9 @@ class MainFrame(Mf):
 
         self.root = self.m_treeCtrl_info.AddRoot(u"碧蓝航线")
         # 数据储存结构实例
-        self.painting_work = PerWorkList()
+        self.painting_work = PerWorkList(mesh_match=self.height_setting[self.data.sk_mash_match],
+                                         texture_match=self.height_setting[self.data.sk_texture_match],
+                                         is_ignore_case=self.setting_info[self.data.sk_ignore_case])
         self.view_work = PerWorkList()
         # 查找tree索引的信息，pos->[单个true，列表中false]；type_is->类型【texture，mesh】，name->点击的位置的对象
         self.is_single, self.type_is, self.name = None, None, None
@@ -65,8 +69,7 @@ class MainFrame(Mf):
         # ，搜索，筛选器
         self.search_type = False
         self.filter_type = False
-        # 常参储存类
-        self.data = GlobalData()
+
         # 搜索数据
         self.select_data = None
 
@@ -569,8 +572,6 @@ class MainFrame(Mf):
         if self.frame_size != self.GetSize():
             self.thread_quick = QuickRestore(self.select_data, self)
             self.thread_quick.start()
-
-
 
     def exit(self, event=None):
         # 退出
