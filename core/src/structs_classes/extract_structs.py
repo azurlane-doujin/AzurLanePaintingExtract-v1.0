@@ -15,6 +15,8 @@ class PerInfo(BasicInfo):
         super(PerInfo, self).__init__(name, val)
         self.sub_data = 1
 
+        self.tex_step = 2
+        self.mesh_step=2
         self.data = GlobalData()
         # tree储存结构组
         self._tex_path = "Empty"
@@ -247,8 +249,12 @@ class PerInfo(BasicInfo):
 
 
 class PerWorkList(BasicInfoList):
-    def __init__(self, item: collections.abc.Iterable = None):
+    def __init__(self, item: collections.abc.Iterable = None, mesh_match=None, texture_match=None,
+                 is_ignore_case=False):
         super(PerWorkList, self).__init__(item)
+        self.is_ignore_case = is_ignore_case
+        self.texture_match = texture_match
+        self.mesh_match = mesh_match
         self.data = GlobalData()
 
     # 显示部分
@@ -330,14 +336,23 @@ class PerWorkList(BasicInfoList):
                     has_ = True
                     key = re.split(r'\s#\d+(\[alpha\])?$', key)[0]
 
+            # 赋值过程
             val: PerInfo = self._info_dict[key]
             if value not in val.more_tex:
                 val.more_tex.append(value)
 
-            if val.tex_path.lower() == "empty":
+            lower_path = os.path.split(value)[0].lower()
+            # 如果非空考虑优先级
+            if 0 < val.tex_step and lower_path.endswith(self.texture_match[0]):
                 val.tex_path = value
-            if os.path.split(value)[0].lower().endswith("texture2d"):
+                val.tex_step = 0
+            elif 1 < val.tex_step and lower_path.endswith(self.texture_match[1]):
                 val.tex_path = value
+                val.tex_step = 1
+            else:
+                val.tex_path = value
+                val.tex_step = 2
+
             if not has_:
                 val.tex_path = value
 
@@ -362,10 +377,17 @@ class PerWorkList(BasicInfoList):
             if value not in val.more_mesh:
                 val.more_mesh.append(value)
 
-            if val.mesh_path.lower() == "empty":
+            lower_path = os.path.split(value)[0].lower()
+            # 如果非空考虑优先级
+            if 0 < val.mesh_step and lower_path.endswith(self.mesh_match[0]):
                 val.mesh_path = value
-            if os.path.split(value)[0].lower().endswith("mesh"):
+                val.mesh_step = 0
+            elif 1 < val.mesh_step and lower_path.endswith(self.mesh_match[1]):
                 val.mesh_path = value
+                val.mesh_step = 1
+            else:
+                val.mesh_path = value
+                val.mesh_step = 2
             if not has_:
                 val.mesh_path = value
 
@@ -379,6 +401,9 @@ class PerWorkList(BasicInfoList):
         """
         # if name == "unknown4":
         #     print(name)
+        if self.is_ignore_case:
+            name=name.lower()
+
         if name not in self._key_list:
             if name not in names.keys():
                 has_cn = False

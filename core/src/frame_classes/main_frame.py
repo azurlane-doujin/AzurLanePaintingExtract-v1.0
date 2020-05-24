@@ -10,6 +10,7 @@ from core.src.frame_classes.SpriteSpiltFrame import SpriteSplitFrame
 from core.src.frame_classes.atlas_spilt_frame import AtlasSpiltFrame
 from core.src.frame_classes.design_frame import MainFrame as Mf
 from core.src.frame_classes.face_match_frame import FaceMatchFrame
+from core.src.frame_classes.help_frame import HelpPageFrame
 from core.src.frame_classes.setting_frame import Setting
 from core.src.static_classes.file_read import FileFilter
 from core.src.static_classes.image_deal import ImageWork
@@ -38,6 +39,8 @@ class MainFrame(Mf):
         # 设置文件
         with open(os.path.join(path, "core\\assets\\setting.json"), 'r')as file:
             self.setting_info = json.load(file)
+        with open(os.path.join(path, "core\\assets\\height_setting.json"), 'r')as file:
+            self.height_setting = json.load(file)
 
         self.root = self.m_treeCtrl_info.AddRoot(u"碧蓝航线")
         # 数据储存结构实例
@@ -70,13 +73,13 @@ class MainFrame(Mf):
         self.frame_size = self.Size
 
     @staticmethod
-    def run():
+    def run(path):
         """
         运行入口函数
         :return:
         """
         app = wx.App()
-        frame = MainFrame(None)
+        frame = MainFrame(None, path)
 
         frame.Show()
 
@@ -313,7 +316,7 @@ class MainFrame(Mf):
         if not self.enter_exit:
 
             # 选择修改键复位
-            self.m_button_change.Enable(False)
+            self.m_bpButton_change.Enable(False)
             # 获取选择元素的id
             val = event.GetItem()
 
@@ -343,7 +346,7 @@ class MainFrame(Mf):
 
                 if is_ok:
                     # 可用修改
-                    self.m_button_change.Enable(True)
+                    self.m_bpButton_change.Enable(True)
                     self.is_single, self.type_is, self.name = pos, type_is, name
                     self.index = index
                     # 生成用于显示的对象
@@ -390,7 +393,7 @@ class MainFrame(Mf):
                             self.remove_target(target)
                         if type_is == self.data.at_split_only:
                             self.split_target_only(target)
-                        if type_is==self.data.at_sprite_split:
+                        if type_is == self.data.at_sprite_split:
                             self.sprite_split(target)
 
     def choice_file(self, event):
@@ -550,7 +553,7 @@ class MainFrame(Mf):
         :param event:
         :return:
         """
-        self.__dialog = Setting(self, self.setting_info, self.work_path, self.names)
+        self.__dialog = Setting(self, self.setting_info, self.work_path, self.names, self.height_setting)
 
         self.__dialog.ShowModal()
         # 重置设置
@@ -566,6 +569,8 @@ class MainFrame(Mf):
         if self.frame_size != self.GetSize():
             self.thread_quick = QuickRestore(self.select_data, self)
             self.thread_quick.start()
+
+
 
     def exit(self, event=None):
         # 退出

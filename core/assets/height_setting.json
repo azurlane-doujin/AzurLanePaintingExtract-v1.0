@@ -1,0 +1,13 @@
+{
+    "mash_match": [
+        "Mesh",
+        ""
+    ],
+    "texture_match": [
+        "Texture2D",
+        ""
+    ],
+    "local_data": {
+        "OSSSY152": "https://raw.githubusercontent.com/OSSSY152/AzurLanePaintingLocalization/master/chs/names.json"
+    }
+}

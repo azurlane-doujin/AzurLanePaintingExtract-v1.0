@@ -242,3 +242,13 @@ class GlobalData:
     @property
     def sk_local_data(self):
         return "local_data"
+    @property
+    def sk_ignore_case(self):
+        return "ignore_case"
+
+    @property
+    def sk_mash_match(self):
+        return "mash_match"
+    @property
+    def sk_texture_match(self):
+        return "texture_match"

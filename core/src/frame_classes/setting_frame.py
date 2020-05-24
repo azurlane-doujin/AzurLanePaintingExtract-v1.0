@@ -8,13 +8,16 @@ from core.src.frame_classes.names_edit_frame import NamesEditFrame
 from core.src.static_classes.image_deal import ImageWork
 from core.src.static_classes.static_data import GlobalData
 from core.src.structs_classes.setting_structs import SettingHolder, PerSetting
+from .help_frame import HelpPageFrame
+from .level_setting_frame import LevelSettingFrame
 from ..frame_classes.location_update import LocationUpdate
 
 
 class Setting(MyDialogSetting):
 
-    def __init__(self, parent, setting_info, work_path, names):
+    def __init__(self, parent, setting_info, work_path, names, height_setting):
         super(Setting, self).__init__(parent)
+        self.height_setting = height_setting
         self.names = names
         self.frame = parent
         self.setting = setting_info
@@ -83,7 +86,21 @@ class Setting(MyDialogSetting):
         val.set_link = self.m_checkBox_ex_copy.SetValue
         val.get_link = self.m_checkBox_ex_copy.GetValue
 
+        val: PerSetting = self.setting_hold[data.sk_ignore_case]
+        val.set_link = self.m_checkBox_ignore_case.SetValue
+        val.get_link = self.m_checkBox_ignore_case.GetValue
+
         self.setting_hold.initial_val()
+
+    def height_setting_dialog(self, event):
+        dialog = LevelSettingFrame(self, self.height_setting, self.names, self.path)
+        dialog.ShowModal()
+        self.names = dialog.get_names()
+        self.height_setting = dialog.get_setting()
+
+    def guider(self, event):
+        dialog = HelpPageFrame(self.path)
+        dialog.Show(True)
 
     def ok_press(self, event):
         self.save_info()
@@ -95,47 +112,11 @@ class Setting(MyDialogSetting):
     def apply_press(self, event):
         self.save_info()
 
-    def update_names(self, event):
-        dialog = LocationUpdate(self, self.names, self.path, self.setting[self.data.sk_local_data])
-        dialog.ShowModal()
-
-        self.setting[self.data.sk_local_data] = dialog.get_local_data()
-
-    # answer=wx.MessageBox("即将开始更新，确认？", "信息", wx.ICON_INFORMATION|wx.YES_NO)
-    # if answer==wx.YES:
-    #     try:
-    #         r=requests.get(
-    #             "https://raw.githubusercontent.com/OSSSY152/AzurLanePaintingLocalization/master/chs/names.json",
-    #             timeout=100)
-    #         if r.status_code==200:
-    #             overwrite=0
-    #             new_item=0
-    #             temp_names=self.names
-    #             keys=list(temp_names.keys())
-    #             new=json.loads(r.text)
-    #             temple=new
-    #             for key, item in temple.items():
-    #                 temp_names[key] = item
-    #                 if key in keys:
-    #                     overwrite += 1
-    #                 else:
-    #                     new_item += 1
-
-    #             self.names=temp_names
-    #             with open(os.path.join(self.path, "core\\assets\\names.json"), "w")as file:
-    #                 json.dump(temp_names, file, indent=4)
-
-    #             wx.MessageBox(f"导入键值对文件成功！\n\t覆盖：{overwrite}\n\t新增：{new_item}", "信息")
-    #     except Exception as info:
-    #         wx.MessageBox(f"导入键值对文件出现错误！\n{info.__str__()}")
-
-    def edit_names(self, event):
-        dialog = NamesEditFrame(self, self.names, self.path)
-        dialog.ShowModal()
-        self.names = dialog.get_names()
-
     def get_setting(self):
         return self.setting
 
     def get_names(self):
         return self.names
+
+    def get_height_setting(self):
+        return self.height_setting
