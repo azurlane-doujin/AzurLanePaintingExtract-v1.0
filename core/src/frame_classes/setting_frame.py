@@ -33,9 +33,9 @@ class Setting(MyDialogSetting):
         self.setting_hold = SettingHolder(setting_info)
 
         self.input_filter_tex = tuple(
-            map(lambda v: str(v.pattern).replace("$", "\\.[Pp][Nn][Gg]$"), self.data.fp_pattern_group))
+            map(lambda v: str(v.pattern).replace("$", "(?: #\\d+)?\\.[Pp][Nn][Gg]$"), self.data.fp_pattern_group))
         self.input_filter_mesh = tuple(
-            map(lambda x: str(x.pattern).replace('$', r'-mesh\.[Oo][Bb][Jj]$'), self.data.fp_pattern_group))
+            map(lambda x: str(x.pattern).replace('$', r'-mesh(?: #\d+)?\.[Oo][Bb][Jj]$'), self.data.fp_pattern_group))
 
     def save_info(self):
         self.setting_hold.get_value()
