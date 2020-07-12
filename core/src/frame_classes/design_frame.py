@@ -1330,3 +1330,199 @@ class DialogSpiltSprite ( wx.Dialog ):
 		event.Skip()
 
 
+###########################################################################
+## Class MyDialoglocation_edit
+###########################################################################
+
+class MyDialoglocation_edit ( wx.Dialog ):
+
+	def __init__( self, parent ):
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"本地化编辑器", pos = wx.DefaultPosition, size = wx.Size( 537,458 ), style = wx.DEFAULT_DIALOG_STYLE )
+
+		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+
+		bSizer47 = wx.BoxSizer( wx.HORIZONTAL )
+
+		bSizer49 = wx.BoxSizer( wx.VERTICAL )
+
+		self.m_treeCtrl_keys = wx.TreeCtrl( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TR_DEFAULT_STYLE )
+		bSizer49.Add( self.m_treeCtrl_keys, 1, wx.ALL|wx.EXPAND, 5 )
+
+
+		bSizer47.Add( bSizer49, 1, wx.EXPAND, 5 )
+
+		self.m_staticline41 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL|wx.LI_VERTICAL )
+		bSizer47.Add( self.m_staticline41, 0, wx.EXPAND |wx.ALL, 5 )
+
+		bSizer48 = wx.BoxSizer( wx.VERTICAL )
+
+		bSizer52 = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_button22 = wx.Button( self, wx.ID_ANY, u"新建本地化", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer52.Add( self.m_button22, 0, wx.ALL, 5 )
+
+		self.m_button18 = wx.Button( self, wx.ID_ANY, u"修改默认本地化连接符", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer52.Add( self.m_button18, 0, wx.ALL, 5 )
+
+
+		bSizer48.Add( bSizer52, 0, wx.EXPAND, 5 )
+
+		self.m_staticline431 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		bSizer48.Add( self.m_staticline431, 0, wx.EXPAND |wx.ALL, 5 )
+
+		bSizer50 = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_bpButton9 = wx.BitmapButton( self, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, wx.BU_AUTODRAW|0 )
+
+		self.m_bpButton9.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_PLUS, wx.ART_BUTTON ) )
+		bSizer50.Add( self.m_bpButton9, 0, wx.ALL, 5 )
+
+		self.m_bpButton10 = wx.BitmapButton( self, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, wx.BU_AUTODRAW|0 )
+
+		self.m_bpButton10.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_MINUS, wx.ART_BUTTON ) )
+		bSizer50.Add( self.m_bpButton10, 0, wx.ALL, 5 )
+
+
+		bSizer48.Add( bSizer50, 0, wx.ALIGN_RIGHT, 5 )
+
+		m_listBox_edsChoices = []
+		self.m_listBox_eds = wx.ListBox( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, m_listBox_edsChoices, 0 )
+		bSizer48.Add( self.m_listBox_eds, 1, wx.ALL|wx.EXPAND, 5 )
+
+		self.m_staticline43 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		bSizer48.Add( self.m_staticline43, 0, wx.EXPAND |wx.ALL, 5 )
+
+		self.m_staticText26 = wx.StaticText( self, wx.ID_ANY, u"键", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText26.Wrap( -1 )
+
+		bSizer48.Add( self.m_staticText26, 0, wx.ALL, 5 )
+
+		self.m_textCtrl_key = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer48.Add( self.m_textCtrl_key, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.m_staticText27 = wx.StaticText( self, wx.ID_ANY, u"值", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText27.Wrap( -1 )
+
+		bSizer48.Add( self.m_staticText27, 0, wx.ALL, 5 )
+
+		self.m_textCtrl_value = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer48.Add( self.m_textCtrl_value, 0, wx.ALL|wx.EXPAND, 5 )
+
+		m_sdbSizer5 = wx.StdDialogButtonSizer()
+		self.m_sdbSizer5OK = wx.Button( self, wx.ID_OK )
+		m_sdbSizer5.AddButton( self.m_sdbSizer5OK )
+		self.m_sdbSizer5Cancel = wx.Button( self, wx.ID_CANCEL )
+		m_sdbSizer5.AddButton( self.m_sdbSizer5Cancel )
+		m_sdbSizer5.Realize();
+
+		bSizer48.Add( m_sdbSizer5, 0, wx.EXPAND, 5 )
+
+
+		bSizer47.Add( bSizer48, 1, wx.EXPAND, 5 )
+
+
+		self.SetSizer( bSizer47 )
+		self.Layout()
+
+		self.Centre( wx.BOTH )
+
+		# Connect Events
+		self.m_treeCtrl_keys.Bind( wx.EVT_TREE_SEL_CHANGED, self.key_select )
+		self.m_button22.Bind( wx.EVT_BUTTON, self.new_location )
+		self.m_button18.Bind( wx.EVT_BUTTON, self.change_connect_sign )
+		self.m_bpButton9.Bind( wx.EVT_BUTTON, self.add_ed )
+		self.m_bpButton10.Bind( wx.EVT_BUTTON, self.remove_ed )
+		self.m_listBox_eds.Bind( wx.EVT_LISTBOX_DCLICK, self.append_ed )
+		self.m_sdbSizer5Cancel.Bind( wx.EVT_BUTTON, self.cancel_click )
+		self.m_sdbSizer5OK.Bind( wx.EVT_BUTTON, self.ok_click )
+
+	def __del__( self ):
+		pass
+
+
+	# Virtual event handlers, overide them in your derived class
+	def key_select( self, event ):
+		event.Skip()
+
+	def new_location( self, event ):
+		event.Skip()
+
+	def change_connect_sign( self, event ):
+		event.Skip()
+
+	def add_ed( self, event ):
+		event.Skip()
+
+	def remove_ed( self, event ):
+		event.Skip()
+
+	def append_ed( self, event ):
+		event.Skip()
+
+	def cancel_click( self, event ):
+		event.Skip()
+
+	def ok_click( self, event ):
+		event.Skip()
+
+
+###########################################################################
+## Class MyDialogNewLocationEnd
+###########################################################################
+
+class MyDialogNewLocationEnd ( wx.Dialog ):
+
+	def __init__( self, parent ):
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"新后缀", pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE )
+
+		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+
+		bSizer51 = wx.BoxSizer( wx.VERTICAL )
+
+		self.m_staticText28 = wx.StaticText( self, wx.ID_ANY, u"新后缀标识名称【不建议重复】", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText28.Wrap( -1 )
+
+		bSizer51.Add( self.m_staticText28, 0, wx.ALL, 5 )
+
+		self.m_textCtrl15 = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer51.Add( self.m_textCtrl15, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.m_staticText29 = wx.StaticText( self, wx.ID_ANY, u"新后缀标识符【不可重复】", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText29.Wrap( -1 )
+
+		bSizer51.Add( self.m_staticText29, 0, wx.ALL, 5 )
+
+		self.m_textCtrl16 = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer51.Add( self.m_textCtrl16, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.m_staticText30 = wx.StaticText( self, wx.ID_ANY, u"默认本地化【不建议重复】", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText30.Wrap( -1 )
+
+		bSizer51.Add( self.m_staticText30, 0, wx.ALL, 5 )
+
+		self.m_textCtrl17 = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer51.Add( self.m_textCtrl17, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.m_staticline44 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		bSizer51.Add( self.m_staticline44, 0, wx.EXPAND |wx.ALL, 5 )
+
+		m_sdbSizer6 = wx.StdDialogButtonSizer()
+		self.m_sdbSizer6OK = wx.Button( self, wx.ID_OK )
+		m_sdbSizer6.AddButton( self.m_sdbSizer6OK )
+		self.m_sdbSizer6Cancel = wx.Button( self, wx.ID_CANCEL )
+		m_sdbSizer6.AddButton( self.m_sdbSizer6Cancel )
+		m_sdbSizer6.Realize();
+
+		bSizer51.Add( m_sdbSizer6, 1, wx.EXPAND, 5 )
+
+
+		self.SetSizer( bSizer51 )
+		self.Layout()
+		bSizer51.Fit( self )
+
+		self.Centre( wx.BOTH )
+
+	def __del__( self ):
+		pass
+
+

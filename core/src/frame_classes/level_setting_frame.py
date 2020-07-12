@@ -5,7 +5,6 @@ from core.src.frame_classes.design_frame import MyDialogHeightSetting
 from core.src.frame_classes.location_update import LocationUpdate
 from core.src.frame_classes.names_edit_frame import NamesEditFrame
 from core.src.static_classes.static_data import GlobalData
-from core.src.structs_classes.setting_structs import SettingHolder
 
 
 class LevelSettingFrame(MyDialogHeightSetting):

@@ -23,18 +23,16 @@ class HelpPageFrame(MyFrameHelp):
         self.url = ""
         self.title = title = self.help_page.GetCurrentTitle()
         self.SetTitle(title)
-        self.in_init=True
-
-
+        self.in_init = True
 
     def redo_page(self, event):
         pass
-        #if self.help_page.CanRedo():
+        # if self.help_page.CanRedo():
         #    self.help_page.Redo()
 
     def undo_page(self, event):
         pass
-        #if self.help_page.CanUndo():
+        # if self.help_page.CanUndo():
         #    self.help_page.Undo()
 
     def reload(self, event):
@@ -45,16 +43,16 @@ class HelpPageFrame(MyFrameHelp):
 
     def use_target_url(self, event):
         pass
-       # url = event.GetString()
-       # self.help_page.LoadURL(url)
+
+    # url = event.GetString()
+    # self.help_page.LoadURL(url)
 
     def go_back(self, event):
         pass
-        #if self.help_page.CanGoBack():
+        # if self.help_page.CanGoBack():
         #    self.help_page.GoBack()
 
     def go_forword(self, event):
         pass
-        #if self.help_page.CanGoForward():
+        # if self.help_page.CanGoForward():
         #    self.help_page.GoForward()
-

@@ -1,8 +1,8 @@
 import json
 import os
+import queue
 import shutil
-import sys
-import time
+import threading
 
 import wx
 
@@ -10,7 +10,6 @@ from core.src.frame_classes.SpriteSpiltFrame import SpriteSplitFrame
 from core.src.frame_classes.atlas_spilt_frame import AtlasSpiltFrame
 from core.src.frame_classes.design_frame import MainFrame as Mf
 from core.src.frame_classes.face_match_frame import FaceMatchFrame
-from core.src.frame_classes.help_frame import HelpPageFrame
 from core.src.frame_classes.setting_frame import Setting
 from core.src.static_classes.file_read import FileFilter
 from core.src.static_classes.image_deal import ImageWork
@@ -18,7 +17,7 @@ from core.src.static_classes.search_order import SearchOrder
 from core.src.static_classes.static_data import GlobalData
 from core.src.structs_classes.drop_order import DragOrder
 from core.src.structs_classes.extract_structs import PerWorkList
-from core.src.thread_classes.extract_thread import RestoreThread
+from core.src.thread_classes.extract_thread import WorkThread, WatchDogThread, SideWorkThread
 from core.src.thread_classes.quick_view import QuickRestore
 
 
@@ -59,6 +58,14 @@ class MainFrame(Mf):
         # 立绘还原线程
         self.thread_quick = None
         self.thread_main = None
+        self.thread_main_groups = []
+        self.thread_main_name = ("thread-1", "thread-2", "thread-3", "thread-4")
+        self.thread_watch_dog = None
+        self.thread_side_work = None
+        # 线程锁定器，队列
+        self.locker = threading.Lock()
+        self.work_queue = queue.Queue()
+        self.err_queue = queue.Queue(10)
         # 进入退出状态
         self.enter_exit = False
         # 保存路径，脚本路径
@@ -74,6 +81,8 @@ class MainFrame(Mf):
         self.select_data = None
 
         self.frame_size = self.Size
+
+        self.pipe = ...
 
     @staticmethod
     def run(path):
@@ -96,12 +105,14 @@ class MainFrame(Mf):
     def change_path(self, is_single, type_is, target, index):
         """
         修改指向文件方法
+        :param index:
         :param is_single: 选中的tree中元素是否为列表外元素
         :param type_is: 选中类型 （tex,mesh）
         :param target: 指向目标方法 type：PerInfo
         :return: bool
         """
-        if is_single is None: return False
+        if is_single is None:
+            return False
         # 当选择对象为单个，而不是列表中项目（其他文件的跟标签）
         # 选择的是texture
         if type_is:
@@ -203,14 +214,24 @@ class MainFrame(Mf):
         self.__dialog.ShowModal()
 
     # 以下为原有函数
-    def restart(self):
+    def restart(self, size, able, unable):
         """
         重置还原线程
         :return:
         """
-        self.thread_main = RestoreThread(1, 'restore', self.painting_work.build_able(),
-                                         self.painting_work.build_unable(), self, self.setting_info,
-                                         self.names, self.save_path)
+        self.thread_main_groups.clear()
+        for name in self.thread_main_name:
+            self.thread_main_groups.append(
+                WorkThread(name, self.work_queue, self.err_queue, self.locker, self, self.setting_info, self.names,
+                           self.save_path, size, self.setting_info[self.data.sk_ignore_case]))
+        self.thread_side_work = SideWorkThread(unable, self.setting_info, self, self.save_path)
+        self.thread_main_groups.append(self.thread_side_work)
+        self.thread_watch_dog = WatchDogThread(self.work_queue, self.err_queue, able, self.locker, self,
+                                               self.setting_info, len(unable) + size, self.thread_main_groups)
+
+        # self.thread_main = RestoreThread(1, 'restore', self.painting_work.build_able(),
+        #                                 self.painting_work.build_unable(), self, self.setting_info,
+        #                                 self.names, self.save_path, self.setting_info[self.data.sk_ignore_case])
 
         self.m_staticText_info.SetLabel("重置还原进度！")
 
@@ -229,7 +250,6 @@ class MainFrame(Mf):
         if self.__dialog.ShowModal() == wx.ID_OK:
             self.m_gauge_state.SetValue(0)
             self.save_path = self.__dialog.GetPath()
-            self.restart()
 
             target.set_single_path(self.__dialog.GetPath())
             ImageWork.restore_tool(target)
@@ -253,7 +273,7 @@ class MainFrame(Mf):
 
         os.makedirs(path, exist_ok=True)
         # 重置进度
-        self.restart()
+        # self.restart()
         self.save_path = path
         self.m_gauge_state.SetValue(0)
 
@@ -270,15 +290,23 @@ class MainFrame(Mf):
             able = able.remove(skip)
 
         # 启动线程
-        self.thread_main.add_save_path(self.save_path)
-        self.thread_main.update_value(able, for_work.build_unable())
-        if self.thread_main.is_alive():
-            self.thread_main.stop_(True)
-            while self.thread_main.is_alive():
-                time.sleep(1)
-            self.thread_main.start()
-        else:
-            self.thread_main.start()
+        # self.thread_main.add_save_path(self.save_path)
+        # self.thread_main.update_value(able, for_work.build_unable())
+        # if self.thread_main.is_alive():
+        #    self.thread_main.stop_(True)
+        #    while self.thread_main.is_alive():
+        #        time.sleep(1)
+        #    self.thread_main.start()
+        # else:
+        #    self.thread_main.start()
+        self.restart(len(able), able, for_work.build_unable())
+        self.thread_watch_dog.start()
+        # self.thread_side_work.start()
+        for thread in self.thread_main_groups:
+            thread.start()
+
+        # 测试多进程
+        # apply_work(able, self.save_path, self, self.data)
 
     def copy_file(self):
         """
@@ -575,8 +603,12 @@ class MainFrame(Mf):
 
     def exit(self, event=None):
         # 退出
+        #        self.thread_watch_dog.
+        self.thread_watch_dog.stop()
+        # self.thread_watch_dog.join()
         self.enter_exit = True
         self.m_treeCtrl_info.DeleteChildren(self.root)
         self.m_treeCtrl_info.Destroy()
         self.Destroy()
-        sys.exit()
+
+        # sys.exit()

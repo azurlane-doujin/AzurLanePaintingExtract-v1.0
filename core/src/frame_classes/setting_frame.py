@@ -4,13 +4,11 @@ import os
 import wx
 
 from core.src.frame_classes.design_frame import MyDialogSetting
-from core.src.frame_classes.names_edit_frame import NamesEditFrame
 from core.src.static_classes.image_deal import ImageWork
 from core.src.static_classes.static_data import GlobalData
 from core.src.structs_classes.setting_structs import SettingHolder, PerSetting
 from .help_frame import HelpPageFrame
 from .level_setting_frame import LevelSettingFrame
-from ..frame_classes.location_update import LocationUpdate
 
 
 class Setting(MyDialogSetting):

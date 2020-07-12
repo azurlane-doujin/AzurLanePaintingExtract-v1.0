@@ -77,15 +77,15 @@ class LocationList(BasicInfoList):
 
     def transform_all(self):
         group = filter(lambda x: x.state == dt.NEW or x.state == dt.COVER, self)
-        value = {key.name: key.val for key in group}
+        value = {key.name.lower(): key.val for key in group}
         return value
 
     def transform_new(self):
         group = filter(lambda x: x.state == dt.NEW, self)
-        value = {key.name: key.val for key in group}
+        value = {key.name.lower(): key.val for key in group}
         return value
 
     def transform_cover(self):
         group = filter(lambda x: x.state == dt.COVER, self)
-        value = {key.name: key.val for key in group}
+        value = {key.name.lower(): key.val for key in group}
         return value

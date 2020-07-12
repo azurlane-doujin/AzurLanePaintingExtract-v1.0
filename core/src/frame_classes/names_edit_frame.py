@@ -107,8 +107,9 @@ class NamesEditFrame(MyDialogKetValueSetting):
         if self.is_changed:
             feedback = wx.MessageBox("要应用这些变化吗？", "信息", wx.ICON_INFORMATION | wx.YES_NO)
             if feedback == wx.YES:
+                save_data={k.lower():v for k,v in self.edit_group.items()}
                 with open(os.path.join(self.path, "core\\assets\\names.json"), "w")as file:
-                    json.dump(self.edit_group, file, indent=4)
+                    json.dump(save_data, file, indent=4)
 
                 self.names = dict(self.edit_group)
 

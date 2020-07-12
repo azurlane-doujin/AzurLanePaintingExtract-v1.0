@@ -74,8 +74,9 @@ class FileFilter(object):
                     return False, '导入完成，无新增项！'
             else:
                 return False, '导入失败，无导入项！'
-        except (TypeError, KeyError, RuntimeError)as info:
+        except Exception as info:  # (TypeError, KeyError, RuntimeError)as info:
             #  raise
+            print(info.__traceback__)
             return False, '导入失败，发生错误！%s' % info
         else:
             return True, '导入成功！ 成功导入%d个！' % num

@@ -6,8 +6,8 @@
     "use_cn": true,
     "make_new_dir": true,
     "export_copy": false,
-    "input_filter_mesh": "^.+-mesh\\.[Oo][Bb][Jj]$",
-    "input_filter_tex": "^.+\\.[Pp][Nn][Gg]$",
+    "input_filter_mesh": "^.+-mesh(?: #\\d+)?\\.[Oo][Bb][Jj]$",
+    "input_filter_tex": "^.+(?: #\\d+)?\\.[Pp][Nn][Gg]$",
     "input_filter": 0,
     "output_group": 1,
     "ignore_case": true
