@@ -1,0 +1,6 @@
+.vscode/
+__pycache__/
+
+core/assets/*.py
+core/assets/*.txt
+core/assets/*.spec

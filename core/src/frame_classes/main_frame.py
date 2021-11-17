@@ -229,10 +229,6 @@ class MainFrame(Mf):
         self.thread_watch_dog = WatchDogThread(self.work_queue, self.err_queue, able, self.locker, self,
                                                self.setting_info, len(unable) + size, self.thread_main_groups)
 
-        # self.thread_main = RestoreThread(1, 'restore', self.painting_work.build_able(),
-        #                                 self.painting_work.build_unable(), self, self.setting_info,
-        #                                 self.names, self.save_path, self.setting_info[self.data.sk_ignore_case])
-
         self.m_staticText_info.SetLabel("重置还原进度！")
 
         self.m_gauge_state.SetValue(0)
@@ -273,7 +269,6 @@ class MainFrame(Mf):
 
         os.makedirs(path, exist_ok=True)
         # 重置进度
-        # self.restart()
         self.save_path = path
         self.m_gauge_state.SetValue(0)
 
@@ -289,24 +284,11 @@ class MainFrame(Mf):
             skip = able.build_skip(target_path_list)
             able = able.remove(skip)
 
-        # 启动线程
-        # self.thread_main.add_save_path(self.save_path)
-        # self.thread_main.update_value(able, for_work.build_unable())
-        # if self.thread_main.is_alive():
-        #    self.thread_main.stop_(True)
-        #    while self.thread_main.is_alive():
-        #        time.sleep(1)
-        #    self.thread_main.start()
-        # else:
-        #    self.thread_main.start()
         self.restart(len(able), able, for_work.build_unable())
         self.thread_watch_dog.start()
-        # self.thread_side_work.start()
+
         for thread in self.thread_main_groups:
             thread.start()
-
-        # 测试多进程
-        # apply_work(able, self.save_path, self, self.data)
 
     def copy_file(self):
         """
@@ -603,8 +585,8 @@ class MainFrame(Mf):
 
     def exit(self, event=None):
         # 退出
-        #        self.thread_watch_dog.
-        self.thread_watch_dog.stop()
+        if  self.thread_watch_dog is not None:
+            self.thread_watch_dog.stop()
         # self.thread_watch_dog.join()
         self.enter_exit = True
         self.m_treeCtrl_info.DeleteChildren(self.root)

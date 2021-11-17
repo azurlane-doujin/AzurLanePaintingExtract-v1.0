@@ -3,6 +3,7 @@ import os
 import re
 import time
 from itertools import filterfalse
+from typing import Union
 
 import wx
 
@@ -277,7 +278,7 @@ class PerWorkList(BasicInfoList):
             return False, None
         return True, self[values[0]]
 
-    def find_in_each(self, id) -> (bool, bool, bool, int, PerInfo):
+    def find_in_each(self, id) -> Union[bool, bool, bool, int, PerInfo]:
         """
         从每一个中寻找指定id
         :param id:
@@ -300,7 +301,7 @@ class PerWorkList(BasicInfoList):
         elif id in target.more_mesh_per_id:
             return True, self.data.td_list_item, self.data.td_mesh_type, target.more_mesh_per_id.index(id), target
 
-    def find_action(self, id) -> (bool, int, PerInfo):
+    def find_action(self, id) -> Union[bool, int, PerInfo]:
         """
         查找是否为特殊动作按键
         :param id:
