@@ -9,9 +9,9 @@ from core.src.static_classes.file_read import FileFilter
 from core.src.static_classes.static_data import GlobalData
 
 
-class DragOrder(wx.FileDropTarget):
+class DropOrder(wx.FileDropTarget):
     def __init__(self, parent: es.PerWorkList, view_work: es.PerWorkList, frame, get_input_data):
-        super(DragOrder, self).__init__()
+        super(DropOrder, self).__init__()
         self.get_input_data = get_input_data
         self.view_work = view_work
         self.frame = frame
@@ -49,6 +49,7 @@ class DragOrder(wx.FileDropTarget):
 
             self.frame.m_treeCtrl_info.DeleteChildren(self.frame.root)
             self.parent.show_in_tree(self.frame.m_treeCtrl_info, self.frame.root)
+
             self.get_input_data(self.view_work, self.parent)
         except RuntimeError:
             return False
@@ -59,7 +60,8 @@ class DragOrder(wx.FileDropTarget):
 
 
 class FaceDragOrder(wx.FileDropTarget):
-    def __init__(self, parent, callback):
+    def __init__(self, parent, callback,type_is):
+        self.type_is = type_is
         self.parent = parent
         self.callback = callback
         super(FaceDragOrder, self).__init__()
@@ -70,7 +72,10 @@ class FaceDragOrder(wx.FileDropTarget):
         is_all_only = True
         files = filter(lambda val: os.path.isfile(val), filenames)
 
-        match_pattern = re.compile(r'^(\d+)(\s#\d+?)?\.(?:png|PNG)$')
+        if self.type_is:
+            match_pattern = re.compile(r'^(\d+)(\s#\d+?)?\.(?:png|PNG)$')
+        else:
+            match_pattern=re.compile(r'^(.+?)\.(?:png|PNG)$')
         for value in files:
             file_name = os.path.basename(value)
             matched = match_pattern.match(file_name)

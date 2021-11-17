@@ -49,7 +49,7 @@ class MainFrame ( wx.Frame ):
 		bSizer8.Add( self.m_searchCtrl1, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
 
-		bSizer3.Add( bSizer8, 0, wx.EXPAND, 5 )
+		bSizer3.Add( bSizer8, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 5 )
 
 		self.m_treeCtrl_info = wx.TreeCtrl( self.m_panel1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TR_DEFAULT_STYLE|wx.TR_FULL_ROW_HIGHLIGHT|wx.TR_HAS_BUTTONS|wx.TR_HAS_VARIABLE_ROW_HEIGHT|wx.TR_HIDE_ROOT|wx.TR_ROW_LINES|wx.TR_SINGLE|wx.TR_TWIST_BUTTONS )
 		bSizer3.Add( self.m_treeCtrl_info, 1, wx.ALL|wx.EXPAND, 5 )
@@ -64,14 +64,24 @@ class MainFrame ( wx.Frame ):
 		self.m_staticline2 = wx.StaticLine( self.m_panel1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_VERTICAL )
 		bSizer5.Add( self.m_staticline2, 0, wx.EXPAND |wx.ALL, 5 )
 
-		self.m_button_setting = wx.Button( self.m_panel1, wx.ID_ANY, u"设置", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer5.Add( self.m_button_setting, 0, wx.ALL, 5 )
+		self.m_bpButton_change = wx.Button( self.m_panel1, wx.ID_ANY, u"设置配对文件", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer5.Add( self.m_bpButton_change, 0, wx.ALL, 5 )
 
 		self.m_staticline4 = wx.StaticLine( self.m_panel1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_VERTICAL )
 		bSizer5.Add( self.m_staticline4, 0, wx.EXPAND |wx.ALL, 5 )
 
-		self.m_bpButton_change = wx.Button( self.m_panel1, wx.ID_ANY, u"设置配对文件", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer5.Add( self.m_bpButton_change, 0, wx.ALL, 5 )
+		self.m_bpButton_setting = wx.BitmapButton( self.m_panel1, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, wx.BU_AUTODRAW|0 )
+
+		self.m_bpButton_setting.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_HELP_BOOK, wx.ART_BUTTON ) )
+		bSizer5.Add( self.m_bpButton_setting, 1, wx.ALL|wx.EXPAND|wx.ALIGN_CENTER_VERTICAL, 5 )
+
+		self.m_staticline45 = wx.StaticLine( self.m_panel1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_VERTICAL )
+		bSizer5.Add( self.m_staticline45, 0, wx.EXPAND |wx.ALL, 5 )
+
+		self.m_bpButton_refeash = wx.BitmapButton( self.m_panel1, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, wx.BU_AUTODRAW|0 )
+
+		self.m_bpButton_refeash.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_NEW_DIR, wx.ART_BUTTON ) )
+		bSizer5.Add( self.m_bpButton_refeash, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL|wx.EXPAND, 5 )
 
 
 		bSizer4.Add( bSizer5, 1, wx.EXPAND, 5 )
@@ -132,8 +142,9 @@ class MainFrame ( wx.Frame ):
 		self.m_searchCtrl1.Bind( wx.EVT_TEXT_ENTER, self.search )
 		self.m_treeCtrl_info.Bind( wx.EVT_TREE_SEL_CHANGED, self.on_info_select )
 		self.m_button_work.Bind( wx.EVT_BUTTON, self.work )
-		self.m_button_setting.Bind( wx.EVT_BUTTON, self.setting )
 		self.m_bpButton_change.Bind( wx.EVT_BUTTON, self.choice_file )
+		self.m_bpButton_setting.Bind( wx.EVT_BUTTON, self.setting )
+		self.m_bpButton_refeash.Bind( wx.EVT_BUTTON, self.refeash )
 
 	def __del__( self ):
 		pass
@@ -162,10 +173,13 @@ class MainFrame ( wx.Frame ):
 	def work( self, event ):
 		event.Skip()
 
+	def choice_file( self, event ):
+		event.Skip()
+
 	def setting( self, event ):
 		event.Skip()
 
-	def choice_file( self, event ):
+	def refeash( self, event ):
 		event.Skip()
 
 
@@ -614,6 +628,9 @@ class MyDialogKetValueSetting ( wx.Dialog ):
 		self.m_textCtrl_new_value = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer15.Add( self.m_textCtrl_new_value, 0, wx.ALL|wx.EXPAND, 5 )
 
+		self.m_button20 = wx.Button( self, wx.ID_ANY, u"添加下一个未本地化信息", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer15.Add( self.m_button20, 0, wx.ALL, 5 )
+
 		self.m_staticline16 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
 		bSizer15.Add( self.m_staticline16, 0, wx.EXPAND |wx.ALL, 5 )
 
@@ -650,6 +667,7 @@ class MyDialogKetValueSetting ( wx.Dialog ):
 		self.Bind( wx.EVT_INIT_DIALOG, self.editor_init )
 		self.m_listBox_name_exist.Bind( wx.EVT_LISTBOX, self.edit_exist_item )
 		self.m_listBox_name_exist.Bind( wx.EVT_LISTBOX_DCLICK, self.view_item )
+		self.m_button20.Bind( wx.EVT_BUTTON, self.next_miss )
 		self.m_bpButton_import_names.Bind( wx.EVT_BUTTON, self.import_names )
 		self.m_button_clear.Bind( wx.EVT_BUTTON, self.clear_item )
 		self.m_button_add.Bind( wx.EVT_BUTTON, self.add_item )
@@ -669,6 +687,9 @@ class MyDialogKetValueSetting ( wx.Dialog ):
 		event.Skip()
 
 	def view_item( self, event ):
+		event.Skip()
+
+	def next_miss( self, event ):
 		event.Skip()
 
 	def import_names( self, event ):
@@ -814,7 +835,7 @@ class MyDialogHeightSetting ( wx.Dialog ):
 class MyDialogAddFace ( wx.Dialog ):
 
 	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"接头器", pos = wx.DefaultPosition, size = wx.Size( 681,467 ), style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"接头器", pos = wx.DefaultPosition, size = wx.Size( 680,470 ), style = wx.DEFAULT_DIALOG_STYLE )
 
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 

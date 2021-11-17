@@ -15,7 +15,7 @@ from core.src.static_classes.file_read import FileFilter
 from core.src.static_classes.image_deal import ImageWork
 from core.src.static_classes.search_order import SearchOrder
 from core.src.static_classes.static_data import GlobalData
-from core.src.structs_classes.drop_order import DragOrder
+from core.src.structs_classes.drop_order import DropOrder
 from core.src.structs_classes.extract_structs import PerWorkList
 from core.src.thread_classes.extract_thread import WorkThread, WatchDogThread, SideWorkThread
 from core.src.thread_classes.quick_view import QuickRestore
@@ -53,13 +53,15 @@ class MainFrame(Mf):
         self.is_single, self.type_is, self.name = None, None, None
         self.index = -1
         # 设置拖动绑定
-        self.drop = DragOrder(self.painting_work, self.view_work, self, self.get_input_data)
+        self.drop = DropOrder(self.painting_work,
+                              self.view_work, self, self.get_input_data)
         self.m_treeCtrl_info.SetDropTarget(self.drop)
         # 立绘还原线程
         self.thread_quick = None
         self.thread_main = None
         self.thread_main_groups = []
-        self.thread_main_name = ("thread-1", "thread-2", "thread-3", "thread-4")
+        self.thread_main_name = (
+            "thread-1", "thread-2", "thread-3", "thread-4")
         self.thread_watch_dog = None
         self.thread_side_work = None
         # 线程锁定器，队列
@@ -99,7 +101,7 @@ class MainFrame(Mf):
 
     def get_input_data(self, view_work, painting_group):
         self.view_work = view_work
-        self.painting_work = painting_group
+        #self.painting_work = painting_group
 
     # 以下为辅助函数，新增部分
     def change_path(self, is_single, type_is, target, index):
@@ -117,7 +119,8 @@ class MainFrame(Mf):
         # 选择的是texture
         if type_is:
             if is_single:
-                dialog = wx.SingleChoiceDialog(self, "选择更改Texture文件", "选择更改文件", target.get_select(type_is))
+                dialog = wx.SingleChoiceDialog(
+                    self, "选择更改Texture文件", "选择更改文件", target.get_select(type_is))
                 if dialog.ShowModal() == wx.ID_OK:
                     index = dialog.GetSelection()
                 # 重定向texture文件
@@ -126,7 +129,8 @@ class MainFrame(Mf):
         # 选择的是mesh
         else:
             if is_single:
-                dialog = wx.SingleChoiceDialog(self, "选择更改Mesh文件", "选择更改文件", target.get_select(type_is))
+                dialog = wx.SingleChoiceDialog(
+                    self, "选择更改Mesh文件", "选择更改文件", target.get_select(type_is))
                 if dialog.ShowModal() == wx.ID_OK:
                     index = dialog.GetSelection()
                 # 重定向mesh文件
@@ -134,10 +138,12 @@ class MainFrame(Mf):
             self.m_treeCtrl_info.SetItemText(id, data)
 
         if target.is_able():
-            self.m_treeCtrl_info.SetItemTextColour(target.key, wx.Colour(253, 86, 255))
+            self.m_treeCtrl_info.SetItemTextColour(
+                target.key, wx.Colour(253, 86, 255))
         else:
 
-            self.m_treeCtrl_info.SetItemTextColour(target.key, wx.Colour(255, 255, 255))
+            self.m_treeCtrl_info.SetItemTextColour(
+                target.key, wx.Colour(255, 255, 255))
         return True
 
     # action 响应函数
@@ -166,8 +172,15 @@ class MainFrame(Mf):
             self.m_staticText_info.SetLabel("换头失败！必须是可还原对象")
             return
         self.m_staticText_info.SetLabel("开始换头！")
-        self.__dialog = FaceMatchFrame(self, target)
-        self.__dialog.ShowModal()
+        data = wx.SingleChoiceDialog(self, "选择类型：", "类型选择", [
+                                     "面部表情附加模式（窗口尺寸：680 X 470）", "舰装-人物拼接模式（窗口尺寸：1920X1080）"])
+        if wx.ID_OK == data.ShowModal():
+            info = data.GetSelection()
+            type_is = False
+            if info == 0:
+                type_is = True
+            self.__dialog = FaceMatchFrame(self, target, type_is)
+            self.__dialog.ShowModal()
 
     def atlas_split_target(self, target):
         if not os.path.isfile(target.tex_path):
@@ -182,10 +195,12 @@ class MainFrame(Mf):
         target.transform_able()
         self.m_treeCtrl_info.DeleteChildren(target.tree_ID)
         target.append_item_tree(self.m_treeCtrl_info)
-        self.m_staticText_info.SetLabel(f"{target.cn_name}已转换,现在为{target.must_able}")
+        self.m_staticText_info.SetLabel(
+            f"{target.cn_name}已转换,现在为{target.must_able}")
 
     def remove_target(self, target):
-        info = wx.MessageBox(f"确实要移除\n{target}\n?", '信息', wx.YES_NO | wx.ICON_INFORMATION)
+        info = wx.MessageBox(
+            f"确实要移除\n{target}\n?", '信息', wx.YES_NO | wx.ICON_INFORMATION)
         if info == wx.YES:
             self.m_treeCtrl_info.Delete(target.tree_ID)
             self.painting_work.remove([target])
@@ -196,14 +211,16 @@ class MainFrame(Mf):
         if not target.is_able_work:
             self.m_staticText_info.SetLabel(f"{target}无法切割，为非可还原对象")
             return
-        self.__dialog = wx.DirDialog(self, "选择保存文件夹", self.work_path, wx.DD_NEW_DIR_BUTTON | wx.DD_DIR_MUST_EXIST)
+        self.__dialog = wx.DirDialog(
+            self, "选择保存文件夹", self.work_path, wx.DD_NEW_DIR_BUTTON | wx.DD_DIR_MUST_EXIST)
         if wx.ID_OK == self.__dialog.ShowModal():
             path = self.__dialog.GetPath()
             if self.setting_info[self.data.sk_make_new_dir]:
                 path = os.path.join(path, "碧蓝航线-导出")
                 os.makedirs(path, exist_ok=True)
                 ImageWork.split_only_one(target, path)
-                self.m_staticText_info.SetLabel(f"{target.cn_name}切割已完成，保存于{path}")
+                self.m_staticText_info.SetLabel(
+                    f"{target.cn_name}切割已完成，保存于{path}")
 
     def sprite_split(self, target):
         if not os.path.isfile(target.tex_path):
@@ -224,10 +241,15 @@ class MainFrame(Mf):
             self.thread_main_groups.append(
                 WorkThread(name, self.work_queue, self.err_queue, self.locker, self, self.setting_info, self.names,
                            self.save_path, size, self.setting_info[self.data.sk_ignore_case]))
-        self.thread_side_work = SideWorkThread(unable, self.setting_info, self, self.save_path)
+        self.thread_side_work = SideWorkThread(
+            unable, self.setting_info, self, self.save_path)
         self.thread_main_groups.append(self.thread_side_work)
         self.thread_watch_dog = WatchDogThread(self.work_queue, self.err_queue, able, self.locker, self,
                                                self.setting_info, len(unable) + size, self.thread_main_groups)
+
+        # self.thread_main = RestoreThread(1, 'restore', self.painting_work.build_able(),
+        #                                 self.painting_work.build_unable(), self, self.setting_info,
+        #                                 self.names, self.save_path, self.setting_info[self.data.sk_ignore_case])
 
         self.m_staticText_info.SetLabel("重置还原进度！")
 
@@ -269,6 +291,7 @@ class MainFrame(Mf):
 
         os.makedirs(path, exist_ok=True)
         # 重置进度
+        # self.restart()
         self.save_path = path
         self.m_gauge_state.SetValue(0)
 
@@ -284,11 +307,24 @@ class MainFrame(Mf):
             skip = able.build_skip(target_path_list)
             able = able.remove(skip)
 
+        # 启动线程
+        # self.thread_main.add_save_path(self.save_path)
+        # self.thread_main.update_value(able, for_work.build_unable())
+        # if self.thread_main.is_alive():
+        #    self.thread_main.stop_(True)
+        #    while self.thread_main.is_alive():
+        #        time.sleep(1)
+        #    self.thread_main.start()
+        # else:
+        #    self.thread_main.start()
         self.restart(len(able), able, for_work.build_unable())
         self.thread_watch_dog.start()
-
+        # self.thread_side_work.start()
         for thread in self.thread_main_groups:
             thread.start()
+
+        # 测试多进程
+        # apply_work(able, self.save_path, self, self.data)
 
     def copy_file(self):
         """
@@ -352,9 +388,11 @@ class MainFrame(Mf):
             else:
                 # 从每个元素中查找id
                 if not self.search_type and not self.filter_type:
-                    is_ok, pos, type_is, index, name = self.painting_work.find_in_each(val)
+                    is_ok, pos, type_is, index, name = self.painting_work.find_in_each(
+                        val)
                 else:
-                    is_ok, pos, type_is, index, name = self.view_work.find_in_each(val)
+                    is_ok, pos, type_is, index, name = self.view_work.find_in_each(
+                        val)
                 # 找到了
 
                 if is_ok:
@@ -388,9 +426,11 @@ class MainFrame(Mf):
                 # 没找到，查找功能按键
                 else:
                     if not self.search_type and not self.filter_type:
-                        is_ok, type_is, target = self.painting_work.find_action(val)
+                        is_ok, type_is, target = self.painting_work.find_action(
+                            val)
                     else:
-                        is_ok, type_is, target = self.view_work.find_action(val)
+                        is_ok, type_is, target = self.view_work.find_action(
+                            val)
 
                     if is_ok:
                         print(target.name)
@@ -411,7 +451,8 @@ class MainFrame(Mf):
 
     def choice_file(self, event):
         # 选择对应文件
-        is_ok = self.change_path(self.is_single, self.type_is, self.name, self.index)
+        is_ok = self.change_path(
+            self.is_single, self.type_is, self.name, self.index)
         if not is_ok:
             wx.MessageBox("无数据！", "错误", wx.OK | wx.ICON_ERROR)
             return
@@ -454,7 +495,8 @@ class MainFrame(Mf):
                 # 开始导出目标文件夹选择
                 title = '保存-碧蓝航线'
                 address = os.getcwd()
-                dialog = wx.DirDialog(self, title, address, style=wx.DD_DEFAULT_STYLE | wx.DD_NEW_DIR_BUTTON)
+                dialog = wx.DirDialog(
+                    self, title, address, style=wx.DD_DEFAULT_STYLE | wx.DD_NEW_DIR_BUTTON)
 
                 if dialog.ShowModal() == wx.ID_OK:
                     temp = dialog.GetPath()
@@ -486,7 +528,8 @@ class MainFrame(Mf):
                         return
                 title = '保存'"-碧蓝航线"
                 address = os.getcwd()
-                dialog = wx.DirDialog(self, title, address, style=wx.DD_DEFAULT_STYLE | wx.DD_NEW_DIR_BUTTON)
+                dialog = wx.DirDialog(
+                    self, title, address, style=wx.DD_DEFAULT_STYLE | wx.DD_NEW_DIR_BUTTON)
                 if dialog.ShowModal() == wx.ID_OK:
                     temp = dialog.GetPath()
                     if self.view_work.build_able().__len__() > 0:
@@ -539,10 +582,12 @@ class MainFrame(Mf):
         if value != '':
 
             if not self.filter_type:
-                indexes = SearchOrder.find(value, self.painting_work.build_search())
+                indexes = SearchOrder.find(
+                    value, self.painting_work.build_search())
                 self.view_work = self.painting_work.build_from_indexes(indexes)
             else:
-                indexes = SearchOrder.find(value, self.view_work.build_search())
+                indexes = SearchOrder.find(
+                    value, self.view_work.build_search())
                 self.view_work = self.view_work.build_from_indexes(indexes)
 
             self.search_type = True
@@ -566,12 +611,29 @@ class MainFrame(Mf):
         :param event:
         :return:
         """
-        self.__dialog = Setting(self, self.setting_info, self.work_path, self.names, self.height_setting)
+        unamed_list=list(map(lambda x: x.name,filter(lambda x:not x.has_cn,self.painting_work)))
+
+        self.__dialog = Setting(self, self.setting_info,
+                                self.work_path, self.names, self.height_setting,unamed_list)
 
         self.__dialog.ShowModal()
         # 重置设置
         self.setting_info = self.__dialog.get_setting()
         self.names = self.__dialog.get_names()
+
+    def refeash(self, event):
+        list(
+            map(lambda x: x.update_name(self.names), self.painting_work))
+        list(
+            map(lambda x: x.update_name(self.names), self.view_work))
+
+        self.enter_exit = True
+        self.m_treeCtrl_info.DeleteChildren(self.root)
+        if not self.search_type:
+            self.painting_work.show_in_tree(self.m_treeCtrl_info, self.root)
+        else:
+            self.view_work.show_in_tree(self.m_treeCtrl_info, self.root)
+        self.enter_exit = False
 
     def resize(self, event):
         """
@@ -585,7 +647,8 @@ class MainFrame(Mf):
 
     def exit(self, event=None):
         # 退出
-        if  self.thread_watch_dog is not None:
+        #        self.thread_watch_dog.
+        if self.thread_watch_dog is not None:
             self.thread_watch_dog.stop()
         # self.thread_watch_dog.join()
         self.enter_exit = True

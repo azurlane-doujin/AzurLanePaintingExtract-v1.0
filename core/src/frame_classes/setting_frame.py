@@ -13,13 +13,15 @@ from .level_setting_frame import LevelSettingFrame
 
 class Setting(MyDialogSetting):
 
-    def __init__(self, parent, setting_info, work_path, names, height_setting):
+    def __init__(self, parent, setting_info, work_path, names, height_setting,unnamed_value:list):
         super(Setting, self).__init__(parent)
         self.height_setting = height_setting
         self.names = names
         self.frame = parent
         self.setting = setting_info
         self.path = work_path
+
+        self.unamed_list=unnamed_value
 
         self.data = GlobalData()
 
@@ -43,7 +45,7 @@ class Setting(MyDialogSetting):
         self.setting[data.sk_input_filter_tex] = self.input_filter_tex[self.setting[data.sk_input_filter]]
         self.setting[data.sk_input_filter_mesh] = self.input_filter_mesh[self.setting[data.sk_input_filter]]
 
-        with open(os.path.join(os.getcwd(), "core\\assets\\setting.json"), 'w')as file:
+        with open(os.path.join(self.path, "core\\assets\\setting.json"), 'w')as file:
             json.dump(self.setting, file, indent=4)
 
     def set_info(self, event):
@@ -91,7 +93,7 @@ class Setting(MyDialogSetting):
         self.setting_hold.initial_val()
 
     def height_setting_dialog(self, event):
-        dialog = LevelSettingFrame(self, self.height_setting, self.names, self.path)
+        dialog = LevelSettingFrame(self, self.height_setting, self.names, self.path,self.unamed_list,self.path)
         dialog.ShowModal()
         self.names = dialog.get_names()
         self.height_setting = dialog.get_setting()

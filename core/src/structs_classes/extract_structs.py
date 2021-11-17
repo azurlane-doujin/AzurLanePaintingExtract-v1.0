@@ -3,7 +3,7 @@ import os
 import re
 import time
 from itertools import filterfalse
-from typing import Union
+from typing import Dict, Tuple
 
 import wx
 
@@ -217,6 +217,12 @@ class PerInfo(BasicInfo):
 
         self.mesh_id, self.more_mesh, self.mesh_path, self.more_mesh_per_id = None, [], "Empty", []
 
+    def update_name(self,names:dict):
+        if self.name in names.keys():
+            self.has_cn=True;
+            self.cn_name=names.get(self.name)
+        
+
     def build_sub(self, value_type, file_type, index):
         """
         从自身的treeid中寻找目标
@@ -278,7 +284,7 @@ class PerWorkList(BasicInfoList):
             return False, None
         return True, self[values[0]]
 
-    def find_in_each(self, id) -> Union[bool, bool, bool, int, PerInfo]:
+    def find_in_each(self, id) -> Tuple[bool, bool, bool, int, PerInfo]:
         """
         从每一个中寻找指定id
         :param id:
@@ -301,7 +307,7 @@ class PerWorkList(BasicInfoList):
         elif id in target.more_mesh_per_id:
             return True, self.data.td_list_item, self.data.td_mesh_type, target.more_mesh_per_id.index(id), target
 
-    def find_action(self, id) -> Union[bool, int, PerInfo]:
+    def find_action(self, id) -> Tuple[bool, int, PerInfo]:
         """
         查找是否为特殊动作按键
         :param id:

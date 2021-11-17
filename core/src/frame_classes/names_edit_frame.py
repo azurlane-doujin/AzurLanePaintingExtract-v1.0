@@ -3,12 +3,13 @@ import os
 from collections import OrderedDict
 
 import wx
+from wx.core import MessageBox
 
 from core.src.frame_classes.design_frame import MyDialogKetValueSetting
 
 
 class NamesEditFrame(MyDialogKetValueSetting):
-    def __init__(self, parent, names, path):
+    def __init__(self, parent, names, path, miss_list: list):
         super(NamesEditFrame, self).__init__(parent)
         self.names = names
         self.edit_group = OrderedDict(self.names)
@@ -16,6 +17,9 @@ class NamesEditFrame(MyDialogKetValueSetting):
         self.show_list = []
         self.path = path
         self.is_changed = False
+
+        self.miss_list = miss_list
+        self.miss_temp = miss_list.copy()
 
     @staticmethod
     def string_format(key, value):
@@ -59,10 +63,12 @@ class NamesEditFrame(MyDialogKetValueSetting):
         else:
             if key in self.key_group:
                 index = self.key_group.index(key)
-                feedback = wx.MessageBox(f"【{key}】已经存在键组中，点击【确认】将会使用新值覆盖", "信息", wx.YES_NO | wx.ICON_INFORMATION)
+                feedback = wx.MessageBox(
+                    f"【{key}】已经存在键组中，点击【确认】将会使用新值覆盖", "信息", wx.YES_NO | wx.ICON_INFORMATION)
                 if feedback == wx.YES:
                     self.edit_group[key] = value
-                    self.m_listBox_name_exist.SetString(index, f'"{key}"->"{value}"')
+                    self.m_listBox_name_exist.SetString(
+                        index, f'"{key}"->"{value}"')
                     self.is_changed = True
 
             else:
@@ -93,24 +99,42 @@ class NamesEditFrame(MyDialogKetValueSetting):
                     if key in self.key_group:
                         overwrite += 1
                         index = self.key_group.index(key)
-                        self.m_listBox_name_exist.SetString(index, self.string_format(key, item))
+                        self.m_listBox_name_exist.SetString(
+                            index, self.string_format(key, item))
                     else:
                         new_item += 1
-                        self.m_listBox_name_exist.Append(self.string_format(key, item))
+                        self.m_listBox_name_exist.Append(
+                            self.string_format(key, item))
 
-                wx.MessageBox(f"导入键值对文件成功！\n\t覆盖：{overwrite}\n\t新增：{new_item}", "信息")
-                self.is_changed=True
+                wx.MessageBox(
+                    f"导入键值对文件成功！\n\t覆盖：{overwrite}\n\t新增：{new_item}", "信息")
+                self.is_changed = True
             except Exception as info:
                 wx.MessageBox(f"导入键值对文件出现错误！\n{info.__str__()}")
 
     def close_save(self, event):
         if self.is_changed:
-            feedback = wx.MessageBox("要应用这些变化吗？", "信息", wx.ICON_INFORMATION | wx.YES_NO)
+            feedback = wx.MessageBox(
+                "要应用这些变化吗？", "信息", wx.ICON_INFORMATION | wx.YES_NO)
             if feedback == wx.YES:
-                save_data={k.lower():v for k,v in self.edit_group.items()}
+                save_data = {k.lower(): v for k, v in self.edit_group.items()}
                 with open(os.path.join(self.path, "core\\assets\\names.json"), "w")as file:
                     json.dump(save_data, file, indent=4)
 
                 self.names = dict(self.edit_group)
 
         super(NamesEditFrame, self).close_save(event)
+
+    def next_miss(self, event):
+        key = self.m_textCtrl_new_key.GetValue()
+        value = self.m_textCtrl_new_value.GetValue()
+
+        if not (key == '' and value == ''):
+
+            self.add_item(event)
+
+        if len(self.miss_list) > 0:
+            data = self.miss_list.pop()
+            self.m_textCtrl_new_key.SetValue(str(data))
+        else:
+            MessageBox("未命名的本地化队列已经清空","警告",wx.OK|wx.ICON_WARNING);

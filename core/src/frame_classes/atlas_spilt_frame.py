@@ -75,8 +75,9 @@ class AtlasSpiltFrame(MyDialogAtlasSpilt):
             path = self.dialog.GetPath()
             os.makedirs(path, exist_ok=True)
             for key in self.names:
+                key_raw=key;
                 key = re.sub(r'[/\\?*<>:]', '-', key)
                 out_path = os.path.join(path, f'{key}.png')
-                self.items[key].save(out_path)
+                self.items[key_raw].save(out_path)
 
             self.m_staticText_info.SetLabel(f'完成导出，导出文件夹：{path}')

@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+# @Author: FrozneString
+# @Date:   2020-08-13 21:12:26
+# @Last Modified by:   FrozneString
+# @Last Modified time: 2020-08-13 21:12:26
 import os
 import re
 from threading import Thread
@@ -14,9 +19,12 @@ from .design_frame import MyDialogAddFace
 
 
 class FaceMatchFrame(MyDialogAddFace):
-    def __init__(self, parent, target: PerInfo):
+    def __init__(self, parent, target: PerInfo, type_is=True):
         super(FaceMatchFrame, self).__init__(parent)
+        if not type_is:
+            self.SetSize(1920, 1080)
         # 目标对象和导入的表情
+        self.type_is = type_is
         self.target = target
         self.input_values = {}
         # self.face_file_group = {}
@@ -55,7 +63,7 @@ class FaceMatchFrame(MyDialogAddFace):
         self.select_index = -1
         self.select_count = 0
         # 表情导入
-        self.drop_order = FaceDragOrder(self, self.callback)
+        self.drop_order = FaceDragOrder(self, self.callback,self.type_is)
         self.m_listBox_import_face.SetDropTarget(self.drop_order)
         # 预览图生成器
         self.view_work = ...
@@ -86,7 +94,7 @@ class FaceMatchFrame(MyDialogAddFace):
 
         al = numpy.array(alpha, dtype=numpy.float)
 
-        scale = al / 255
+        scale = round(al / 255)
 
         face_a = numpy.array(face)
         bg_a = numpy.array(target_bg)
