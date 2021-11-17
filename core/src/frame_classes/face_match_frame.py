@@ -94,7 +94,7 @@ class FaceMatchFrame(MyDialogAddFace):
 
         al = numpy.array(alpha, dtype=numpy.float)
 
-        scale = round(al / 255)
+        scale = al / 255
 
         face_a = numpy.array(face)
         bg_a = numpy.array(target_bg)
@@ -153,21 +153,6 @@ class FaceMatchFrame(MyDialogAddFace):
 
             self.m_staticText_info.SetLabel(f"画布向右扩展{self.right_extend}像素")
 
-        # elif self.left_extend > 0 or self.right_extend > 0:
-        #    # 其他情况下，可能存在回缩状态
-        #    if self.left_extend > 0 and self.left_extend >= value:
-        #        # 当向左扩展大于0，x坐标点也大于0,且左侧扩展- x >=0，左侧扩展向右回缩，回缩值为当前x值，x归零
-        #        self.left_extend -= value
-        #        value = 0
-        #        self.m_staticText_info.SetLabel(f"画布向左扩展{self.left_extend}像素")
-        #
-        #    elif self.right_extend > 0 and \
-        #            self.bg_size[0] > (value + self.target_face.width) >= self.bg_size[0] - self.right_extend:
-        #        # 当向左扩展大于0，x坐标+面部表情<总画布宽度,且（画布宽度-向右扩展）《= x坐标+面部表情宽度;
-        #        # x最终坐标不变，向右扩展=总画布宽度-（x坐标+面部表情宽度）
-        #        self.right_extend -= self.bg_size[0] - (value + self.target_face.width)
-        #        self.m_staticText_info.SetLabel(f"画布向右扩展{self.right_extend}像素")
-
         self._pos_x = value
         self.add_face()
 
@@ -186,26 +171,6 @@ class FaceMatchFrame(MyDialogAddFace):
             self.button_extend = value + self.target_face.height - self.bg_size[1]
             self.m_staticText_info.SetLabel(f"画布向下扩展{self.button_extend}像素")
 
-        # elif self.top_extend > 0 or self.button_extend > 0:
-        #    # 其他情况下，可能存在回缩状态
-        #    if self.top_extend > 0:
-        #        # 当向上扩展大于0，y坐标点也大于0,且顶部扩展- y >=0，顶部扩展向下回缩，回缩值为当前y值，y归零
-        #        if self.top_extend >= value:
-        #            self.top_extend -= value
-        #        else:
-        #            self.top_extend = 0
-        #        value = 0
-        #        self.m_staticText_info.SetLabel(f"画布向上扩展{self.top_extend}像素")
-        #
-        #    elif self.button_extend > 0:
-        #        # 当向下扩展大于0，y坐标+面部表情高度<总画布高度,且（画布高度-向下扩展）《= y坐标+面部表情高度;
-        #        # y最终坐标不变，向下扩展-=总画布高度-（y坐标+面部表情高度）
-        #        if self.bg_size[1] > (value + self.target_face.height) > self.bg_size[1] - self.button_extend:
-        #            self.button_extend -= self.bg_size[1] - (value + self.target_face.height)
-        #        elif(value + self.target_face.height)<= self.bg_size[1] - self.button_extend:
-        #            self.button_extend = 0
-        #        self.m_staticText_info.SetLabel(f"画布向下扩展{self.button_extend}像素")
-
         self._pos_y = value
         self.add_face()
 
@@ -221,7 +186,6 @@ class FaceMatchFrame(MyDialogAddFace):
         if value + self.main_view_w > self.bg_size[0]:
             value = self.bg_size[0] - self.main_view_w
         self._target_x = value
-        # self.pos_x += value - self.main_view_w
         self.paint_move(self._target_x, self._target_y)
 
     @property
