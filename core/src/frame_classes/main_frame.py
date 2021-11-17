@@ -1,6 +1,7 @@
 import json
 import os
 import queue
+from re import S
 import shutil
 import threading
 
@@ -230,7 +231,24 @@ class MainFrame(Mf):
         self.__dialog = SpriteSplitFrame(self, target)
         self.__dialog.ShowModal()
 
+    def change_local(self, target):
+        src_name = target.name
+        local_name = target.cn_name
+
+        info = f"更改本地化：{'修改旧本地化' if src_name in self.names.keys() else '添加本地化' } {src_name}"
+
+        d = wx.TextEntryDialog(self, info, "更改本地化", local_name)
+        if d.ShowModal() == wx.ID_OK:
+            data = str(d.GetValue())
+            if data == local_name or data == "":
+                return
+            else:
+                target.cn_name = data
+                self.names[src_name] = data
+                self.refeash(None)
+
     # 以下为原有函数
+
     def restart(self, size, able, unable):
         """
         重置还原线程
@@ -448,6 +466,8 @@ class MainFrame(Mf):
                             self.split_target_only(target)
                         if type_is == self.data.at_sprite_split:
                             self.sprite_split(target)
+                        if type_is == self.data.at_change_local:
+                            self.change_local(target)
 
     def choice_file(self, event):
         # 选择对应文件
@@ -611,10 +631,11 @@ class MainFrame(Mf):
         :param event:
         :return:
         """
-        unamed_list=list(map(lambda x: x.name,filter(lambda x:not x.has_cn,self.painting_work)))
+        unamed_list = list(map(lambda x: x.name, filter(
+            lambda x: not x.has_cn, self.painting_work)))
 
         self.__dialog = Setting(self, self.setting_info,
-                                self.work_path, self.names, self.height_setting,unamed_list)
+                                self.work_path, self.names, self.height_setting, unamed_list)
 
         self.__dialog.ShowModal()
         # 重置设置
@@ -656,4 +677,6 @@ class MainFrame(Mf):
         self.m_treeCtrl_info.Destroy()
         self.Destroy()
 
+        with open(os.path.join(self.work_path, "core\\assets\\names.json"), "w")as file:
+            json.dump(self.names, file, indent=4)
         # sys.exit()

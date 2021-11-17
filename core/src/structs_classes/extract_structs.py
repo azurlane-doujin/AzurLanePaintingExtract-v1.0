@@ -53,7 +53,8 @@ class PerInfo(BasicInfo):
             "set_able",
             "split_only",
             "remove_item",
-            "sprite_spilt"
+            "sprite_spilt",
+            "change_local"
         ]
         # 是否以中文保存
         self._is_save_as_cn = True
@@ -173,6 +174,9 @@ class PerInfo(BasicInfo):
 
         remove_item = self.action_group[self.data.at_remove_item] = tree.AppendItem(action_root, "删除该元素 ")
         tree.SetItemTextColour(remove_item, wx.Colour(248, 0, 255))
+        
+        change_local = self.action_group[self.data.at_change_local] = tree.AppendItem(action_root, "修改本地化 ")
+        tree.SetItemTextColour(change_local, wx.Colour(248, 44, 255))
 
     def append_to_tree(self, tree: wx.TreeCtrl, tree_root: wx.TreeItemId):
         """
